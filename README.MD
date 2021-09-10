@@ -9,5 +9,5 @@ Cấu hình & port xem tại .dev:
  - Stop: deploy -> dev -> stop.sh
  - Log: deploy -> dev -> log.sh
 
-MONGO-EXPRESS: Dùng để view DB
- - Port: .env.dev
+POSTGRES: Dùng DataGrip để view DB
+ - Download: https://www.jetbrains.com/datagrip/
