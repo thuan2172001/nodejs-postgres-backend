@@ -1,4 +1,5 @@
 import express from 'express';
+import { seed } from './seed-data/seed';
 import path from 'path';
 import {
 	API_PREFIX,
@@ -26,12 +27,12 @@ module.exports = () => {
 
 	let url = `postgres://${PG_USER}:${PG_PASS}@${PG_URL}:${PG_PORT}/${PG_DB}`
 
-	console.log({url});
+	console.log({ url });
 
 	const Sql = new Sequelize(url);
 
 	const errMes = {};
-	
+
 	if (!fs.existsSync('uploads')) {
 		fs.mkdirSync('uploads');
 	}
@@ -44,6 +45,8 @@ module.exports = () => {
 		.catch(err => {
 			console.error('Unable to connect to the database:', err);
 		});
+
+	seed().then(() => console.log('Seed success !')).catch(err => console.log(err));
 
 	const initApi = () => {
 		if (NODE_ENV !== 'production') {

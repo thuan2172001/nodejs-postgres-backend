@@ -1,5 +1,6 @@
 import faker from 'faker';
 import { getCSVFiles, getContentCSVFiles, cleanField } from './scanDataFile';
+import { Episodes } from '../models/episodes';
 
 const Promise = require('bluebird');
 
@@ -30,6 +31,10 @@ export const generateEpisode = async () => {
             };
             dataSeed.push(item);
         });
+
+        await Episodes.sync({ force: false }).then(() => {
+            return Episodes.bulkCreate(dataSeed);
+        }).catch(err => console.log(err));
 
         return dataSeed;
 

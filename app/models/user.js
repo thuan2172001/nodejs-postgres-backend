@@ -31,10 +31,10 @@ const Users = Sql.define('users', {
     freezeTableName: true,
 });
 
-Users.sync({ force: true }).then(() => {
-    generateUser().then(data => {
-        return Users.bulkCreate(data);
-    })
-});
+// Users.sync({ force: false }).then(() => {
+//     generateUser().then(data => {
+//         return Users.bulkCreate(data);
+//     }).catch(err => console.log(err))
+// });
 
 module.exports.Users = Users;

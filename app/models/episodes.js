@@ -43,10 +43,10 @@ const Episodes = Sql.define('episodes', {
     freezeTableName: true,
 });
 
-Episodes.sync({ force: true }).then(() => {
-    generateEpisode().then(data => {
-        return Episodes.bulkCreate(data);
-    })
-});
+// Episodes.sync({ force: true }).then(() => {
+//     generateEpisode().then(data => {
+//         return Episodes.bulkCreate(data);
+//     }).catch(err => console.log(err))
+// });
 
 module.exports.Episodes = Episodes;
