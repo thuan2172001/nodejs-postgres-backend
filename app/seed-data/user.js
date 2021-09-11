@@ -1,5 +1,4 @@
 import faker from 'faker';
-// import { Users } from '../models/user';
 import { getCSVFiles, getContentCSVFiles, cleanField } from './scanDataFile';
 
 const Promise = require('bluebird');
@@ -8,16 +7,16 @@ faker.locale = 'vi';
 
 export const generateUser = async () => {
     try {
-        const userFile = await getCSVFiles('users');
+        const dataFile = await getCSVFiles('users');
 
-        const { header, content } = await getContentCSVFiles(userFile[0]);
+        const { header, content } = await getContentCSVFiles(dataFile[0]);
 
-        let userSeed = []
+        let dataSeed = []
 
         await Promise.each(content, async (line) => {
             const field = cleanField(line.split(','));
 
-            const user = {
+            const item = {
                 userId: field[header.indexOf('userId')],
                 username: field[header.indexOf('username')],
                 fullName: field[header.indexOf('fullName')],
@@ -26,12 +25,10 @@ export const generateUser = async () => {
                 encryptedPrivateKey:
                     'U2FsdGVkX1849aMg8O6GLRVrFSLd2aQI4cRaS4Ql2nZr8p+smv5O9koFn+J6EkcwaZF6u8dGb3tJEXg35q0raA==',
             };
-            userSeed.push(user);
+            dataSeed.push(item);
         });
 
-        console.log("debug here");
-
-        return userSeed;
+        return dataSeed;
 
     } catch (err) {
         throw new Error(err.message);

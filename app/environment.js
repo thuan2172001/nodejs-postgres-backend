@@ -20,3 +20,11 @@ export const { MEMORY_LIMIT } = process.env;
 export const { MEMORY_RESERVATIONS } = process.env;
 export const { UPLOAD_DIR } = process.env;
 export const { URL } = process.env;
+
+export const IMAGE = ['.svg', '.png', '.jpg', '.jpeg'];
+export const WATCH = ['.mp4', '.mpeg4'];
+export const READ = ['.pdf'];
+
+export const IMAGE_SIZE = 10000000;
+export const WATCH_SIZE = 1000000000;
+export const READ_SIZE = 50000000;

@@ -13,7 +13,18 @@ const api = express.Router();
 api.get('/admin/user', async (req, res) => {
   try {
     const args = req.query;
-    const results = await getAll(args);
+    const results = await getAll(args, 'Users');
+
+    return res.json(success(results));
+  } catch (err) {
+    return CommonError(req, err, res);
+  }
+});
+
+api.get('/admin/episode', async (req, res) => {
+  try {
+    const args = req.query;
+    const results = await getAll(args, 'Episodes');
 
     return res.json(success(results));
   } catch (err) {

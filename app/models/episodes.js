@@ -1,27 +1,39 @@
 import { Sql } from '../database';
-import { generateUser } from '../seed-data/user';
+import { generateEpisode } from '../seed-data/episode';
 
 const { DataTypes } = require('sequelize');
 
-const Users = Sql.define('users', {
-    userId: {
+const Episodes = Sql.define('episodes', {
+    _id: {
         type: DataTypes.STRING,
         allowNull: false,
         primaryKey: true,
     },
-    username: {
+    chapter: {
         type: DataTypes.STRING,
     },
-    email: {
+    name: {
         type: DataTypes.STRING,
     },
-    fullName: {
+    key: {
         type: DataTypes.STRING,
     },
-    publicKey: {
+    pageNumber: {
+        type: DataTypes.INTEGER,
+    },
+    description: {
         type: DataTypes.STRING,
     },
-    encryptedPrivateKey: {
+    serie: {
+        type: DataTypes.STRING,
+    },
+    thumbnail: {
+        type: DataTypes.STRING,
+    },
+    price: {
+        type: DataTypes.STRING,
+    },
+    timeFirstPublished: {
         type: DataTypes.STRING,
     },
 }, {
@@ -31,10 +43,10 @@ const Users = Sql.define('users', {
     freezeTableName: true,
 });
 
-Users.sync({ force: true }).then(() => {
-    generateUser().then(data => {
-        return Users.bulkCreate(data);
+Episodes.sync({ force: true }).then(() => {
+    generateEpisode().then(data => {
+        return Episodes.bulkCreate(data);
     })
 });
 
-module.exports.Users = Users;
+module.exports.Episodes = Episodes;
