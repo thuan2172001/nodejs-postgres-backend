@@ -1,7 +1,8 @@
-userId,username,publicKey,encryptedPrivateKey,fullName,email
-1,account1,,,thuan2172001,acc1@gmail.com
-2,account2,,,thuan2172001,acc2@gmail.com
-3,account3,,,thuan2172001,acc3@gmail.com
-4,account4,,,thuan2172001,acc4@gmail.com
-5,account5,,,thuan2172001,acc5@gmail.com
-6,account6,,,thuan2172001,acc6@gmail.com
+_id,username,publicKey,encryptedPrivateKey,fullName,email,role
+1,account1,,,thuan2172001,acc1@gmail.com,user
+2,account2,,,thuan2172001,acc2@gmail.com,user
+3,account3,,,thuan2172001,acc3@gmail.com,user
+4,account4,,,thuan2172001,acc4@gmail.com,user
+5,account5,,,thuan2172001,acc5@gmail.com,user
+6,account6,,,thuan2172001,acc6@gmail.com,user
+7,creator1,,,creator1,creator1@gmail.com,creator

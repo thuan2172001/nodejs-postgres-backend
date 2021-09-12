@@ -14,8 +14,7 @@ api.post('/auth/credential', async (req, res) => {
     if (!username) {
       throw new Error('AUTH.ERROR.INVALID_REQUEST');
     } else {
-      const user = await Users.findOne({ username });
-      console.log({ user })
+      const user = await Users.findOne({ where: { username } });
       if (user) {
         return res.json(success(user));
       }
@@ -30,9 +29,8 @@ api.post('/auth/credential', async (req, res) => {
 api.post('/auth/ping', CheckAuth, async (req, res) => {
   try {
     const user = await Users.findOne({
-      username: req.body.certificateInfo.username,
-    }).populate(['role']);
-    console.log({ user })
+      where: { username: req.body.certificateInfo.username },
+    });
     if (user) {
       return res.json(success(user));
     }

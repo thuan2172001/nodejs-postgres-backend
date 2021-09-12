@@ -2,28 +2,37 @@ import { Sql } from '../database';
 
 const { DataTypes } = require('sequelize');
 
-const Users = Sql.define('users', {
-    _id: {
+const Episodes = Sql.define('episodes', {
+    episodeId: {
         type: DataTypes.STRING,
         allowNull: false,
         primaryKey: true,
     },
-    username: {
+    chapter: {
         type: DataTypes.STRING,
     },
-    email: {
+    name: {
         type: DataTypes.STRING,
     },
-    fullName: {
+    key: {
         type: DataTypes.STRING,
     },
-    publicKey: {
+    pageNumber: {
+        type: DataTypes.INTEGER,
+    },
+    description: {
         type: DataTypes.STRING,
     },
-    encryptedPrivateKey: {
+    serieId: {
         type: DataTypes.STRING,
     },
-    role: {
+    thumbnail: {
+        type: DataTypes.STRING,
+    },
+    price: {
+        type: DataTypes.STRING,
+    },
+    timeFirstPublished: {
         type: DataTypes.STRING,
     },
 }, {
@@ -33,10 +42,10 @@ const Users = Sql.define('users', {
     freezeTableName: true,
 });
 
-// Users.sync({ force: false }).then(() => {
-//     generateUser().then(data => {
-//         return Users.bulkCreate(data);
+// Episodes.sync({ force: true }).then(() => {
+//     generateEpisode().then(data => {
+//         return Episodes.bulkCreate(data);
 //     }).catch(err => console.log(err))
 // });
 
-module.exports.Users = Users;
+module.exports.Episodes = Episodes;

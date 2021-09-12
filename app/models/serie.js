@@ -1,40 +1,30 @@
 import { Sql } from '../database';
-import { generateEpisode } from '../seed-data/episode';
 
 const { DataTypes } = require('sequelize');
 
-const Episodes = Sql.define('episodes', {
-    _id: {
+const Series = Sql.define('series', {
+    serieId: {
         type: DataTypes.STRING,
         allowNull: false,
         primaryKey: true,
     },
-    chapter: {
+    serieName: {
         type: DataTypes.STRING,
     },
-    name: {
+    categoryId: {
         type: DataTypes.STRING,
-    },
-    key: {
-        type: DataTypes.STRING,
-    },
-    pageNumber: {
-        type: DataTypes.INTEGER,
     },
     description: {
-        type: DataTypes.STRING,
-    },
-    serie: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
     },
     thumbnail: {
         type: DataTypes.STRING,
     },
-    price: {
+    cover: {
         type: DataTypes.STRING,
     },
-    timeFirstPublished: {
-        type: DataTypes.STRING,
+    isPublished: {
+        type: DataTypes.BOOLEAN,
     },
 }, {
     // disable the modification of table names; By default, sequelize will automatically
@@ -43,10 +33,4 @@ const Episodes = Sql.define('episodes', {
     freezeTableName: true,
 });
 
-// Episodes.sync({ force: true }).then(() => {
-//     generateEpisode().then(data => {
-//         return Episodes.bulkCreate(data);
-//     }).catch(err => console.log(err))
-// });
-
-module.exports.Episodes = Episodes;
+module.exports.Series = Series;

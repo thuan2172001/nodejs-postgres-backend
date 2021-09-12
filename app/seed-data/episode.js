@@ -1,6 +1,6 @@
 import faker from 'faker';
 import { getCSVFiles, getContentCSVFiles, cleanField } from './scanDataFile';
-import { Episodes } from '../models/episodes';
+import { Episodes } from '../models/episode';
 
 const Promise = require('bluebird');
 
@@ -22,9 +22,9 @@ export const generateEpisode = async () => {
                 name: field[header.indexOf('name')],
                 key: field[header.indexOf('key')],
                 pageNumber: field[header.indexOf('pageNumber')],
-                _id: field[header.indexOf('_id')],
+                episodeId: field[header.indexOf('episodeId')],
                 description: field[header.indexOf('description')],
-                serie: field[header.indexOf('serie')],
+                serieId: field[header.indexOf('serieId')],
                 thumbnail: field[header.indexOf('thumbnail')],
                 price: field[header.indexOf('price')],
                 timeFirstPublished: field[header.indexOf('timeFirstPublished')],
@@ -34,7 +34,7 @@ export const generateEpisode = async () => {
 
         await Episodes.sync({ force: false }).then(() => {
             return Episodes.bulkCreate(dataSeed);
-        }).catch(err => console.log(err));
+        }).catch(err => console.log({"episodeSeedErr" :err}));
 
         return dataSeed;
 
