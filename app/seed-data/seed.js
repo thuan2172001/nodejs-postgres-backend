@@ -1,8 +1,8 @@
 import { SEED_DATA } from '../environment';
-import { generateCategory } from './category';
-import { generateEpisode } from './episode';
-import { generateSerie } from './serie';
-import { generateUser } from './user';
+import { generateCategory } from './seed-category';
+import { generateEpisode } from './seed-episode';
+import { generateSerie } from './seed-serie';
+import { generateUser } from './seed-user';
 
 export const seed = async () => {
     if (SEED_DATA === 'true') {

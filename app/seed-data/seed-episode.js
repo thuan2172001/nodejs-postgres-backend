@@ -10,12 +10,12 @@ export const generateEpisode = async () => {
     try {
         const dataFile = await getCSVFiles('episodes');
 
-        const { header, content } = await getContentCSVFiles(dataFile[0]);
+        const { header, content } = await getContentCSVFiles(dataFile[0], ';');
 
         let dataSeed = []
 
         await Promise.each(content, async (line) => {
-            const field = cleanField(line.split(','));
+            const field = cleanField(line.split(';'));
 
             const item = {
                 chapter: field[header.indexOf('chapter')],

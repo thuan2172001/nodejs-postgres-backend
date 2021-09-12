@@ -4,7 +4,7 @@ const { DataTypes } = require('sequelize');
 
 const Users = Sql.define('users', {
     _id: {
-        type: DataTypes.STRING,
+        type: DataTypes.UUID,
         allowNull: false,
         primaryKey: true,
     },

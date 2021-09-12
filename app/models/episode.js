@@ -21,7 +21,7 @@ const Episodes = Sql.define('episodes', {
         type: DataTypes.INTEGER,
     },
     description: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
     },
     serieId: {
         type: DataTypes.UUID,
@@ -41,11 +41,5 @@ const Episodes = Sql.define('episodes', {
     // if you don't want that, set the following
     freezeTableName: true,
 });
-
-// Episodes.sync({ force: true }).then(() => {
-//     generateEpisode().then(data => {
-//         return Episodes.bulkCreate(data);
-//     }).catch(err => console.log(err))
-// });
 
 module.exports.Episodes = Episodes;

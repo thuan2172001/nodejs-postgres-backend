@@ -10,12 +10,12 @@ export const generateUser = async () => {
     try {
         const dataFile = await getCSVFiles('users');
 
-        const { header, content } = await getContentCSVFiles(dataFile[0]);
+        const { header, content } = await getContentCSVFiles(dataFile[0], ';');
 
         let dataSeed = []
 
         await Promise.each(content, async (line) => {
-            const field = cleanField(line.split(','));
+            const field = cleanField(line.split(';'));
 
             const item = {
                 _id: field[header.indexOf('_id')],

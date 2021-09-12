@@ -10,12 +10,12 @@ export const generateCategory = async () => {
     try {
         const dataFile = await getCSVFiles('categories');
 
-        const { header, content } = await getContentCSVFiles(dataFile[0]);
+        const { header, content } = await getContentCSVFiles(dataFile[0], ';');
 
         let dataSeed = []
 
         await Promise.each(content, async (line) => {
-            const field = cleanField(line.split(','));
+            const field = cleanField(line.split(';'));
 
             const item = {
                 categoryId: field[header.indexOf('categoryId')],

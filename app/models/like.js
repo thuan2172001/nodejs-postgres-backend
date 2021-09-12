@@ -1,16 +1,18 @@
 import { Sql } from '../database';
-import { Series } from './serie';
 
 const { DataTypes } = require('sequelize');
 
-const Categories = Sql.define('categories', {
-    categoryId: {
-        type: DataTypes.STRING,
+const Likes = Sql.define('likes', {
+    userId: {
+        type: DataTypes.UUID,
         allowNull: false,
         primaryKey: true,
     },
-    categoryName: {
-        type: DataTypes.STRING,
+    serieId: {
+        type: DataTypes.UUID,
+    },
+    episodeId: {
+        type: DataTypes.UUID,
     },
 }, {
     // disable the modification of table names; By default, sequelize will automatically
@@ -19,11 +21,4 @@ const Categories = Sql.define('categories', {
     freezeTableName: true,
 });
 
-Categories.hasMany(Series, { foreignKey: 'categoryId' })
-Series.belongsTo(Categories, {
-    foreignKey: 'categoryId',
-    onDelete: "CASCADE",
-    as: "createdBy",
-})
-
-module.exports.Categories = Categories;
+module.exports.Likes = Likes;

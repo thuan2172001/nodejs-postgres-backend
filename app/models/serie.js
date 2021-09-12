@@ -1,4 +1,5 @@
 import { Sql } from '../database';
+import { Categories } from './category';
 
 const { DataTypes } = require('sequelize');
 

@@ -1,7 +1,7 @@
-categoryId,categoryName
-cate1,Drama
-cate2,Comedy
-cate3,Mistery
-cate4,Horror
-cate5,Sf
-cate6,Fantasy
+categoryId;categoryName
+cate1;Drama
+cate2;Comedy
+cate3;Mistery
+cate4;Horror
+cate5;Sf
+cate6;Fantasy
