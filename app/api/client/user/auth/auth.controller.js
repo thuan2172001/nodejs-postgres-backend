@@ -11,6 +11,7 @@ const { error } = require('../../../../services/logger');
 api.post('/auth/credential', async (req, res) => {
   try {
     const { username } = req.body;
+    console.log({ username });
     if (!username) {
       throw new Error('AUTH.ERROR.INVALID_REQUEST');
     } else {

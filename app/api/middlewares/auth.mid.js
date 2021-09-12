@@ -1,7 +1,7 @@
 import {
 	API_PREFIX, CHECK_AUTH, CHECK_CHANGE_PASSWORD, CHECK_REQUEST_SIGNATURE,
 } from '../../environment';
-import {Users} from '../../models/user';
+import { Users } from '../../models/user';
 
 const { unauthorized, badRequest } = require('../../utils/response-utils');
 const { VerifyMessage } = require('../../utils/crypto-utils');
@@ -136,4 +136,11 @@ export const CheckAuth = (req, res, next) => {
 		console.log(e.message);
 		res.json(unauthorized('AUTH.ERROR.INTERNAL_ERROR'));
 	}
+};
+
+export const skipGuestQuery = function (middleware) {
+	return function (req, res, next) {
+		if (req.query.guest === 'true') return next();
+		return middleware(req, res, next);
+	};
 };

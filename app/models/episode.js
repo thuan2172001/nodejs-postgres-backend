@@ -4,8 +4,8 @@ const { DataTypes } = require('sequelize');
 
 const Episodes = Sql.define('episodes', {
     episodeId: {
-        type: DataTypes.STRING,
-        allowNull: false,
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV1,
         primaryKey: true,
     },
     chapter: {
@@ -24,7 +24,7 @@ const Episodes = Sql.define('episodes', {
         type: DataTypes.STRING,
     },
     serieId: {
-        type: DataTypes.STRING,
+        type: DataTypes.UUID,
     },
     thumbnail: {
         type: DataTypes.STRING,

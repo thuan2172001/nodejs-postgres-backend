@@ -5,7 +5,7 @@ import {
   success,
 } from '../../../utils/response-utils';
 import {
-  getAll, getById, create, update, remove, removeById,
+  getAll
 } from './admin.service';
 
 const api = express.Router();
