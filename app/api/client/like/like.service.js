@@ -25,7 +25,7 @@ export const likeToggle = async ({ userId, episodeId, serieId, status }) => {
 
     console.log({ userId, serieId, episodeId })
 
-    const foundItem = await Likes.findOne({ userId, serieId, episodeId })
+    const foundItem = await Likes.findOne({ where: { userId, serieId, episodeId } })
 
     if (status == 'LIKE') {
         if (foundItem) throw new Error('LIKE.ALREADY_LIKED');
