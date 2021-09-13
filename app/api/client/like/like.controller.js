@@ -13,9 +13,11 @@ api.post('/like/like', CheckAuth, async (req, res) => {
         const { episodeId, serieId } = req.body;
         const userId = req.userInfo && req.userInfo._id ? req.userInfo._id : '';
 
-        const results = await likeToggle({ userId, serieId, episodeId, status: 'LIKE' });
+        const statusCode = await likeToggle({ userId, serieId, episodeId, status: 'LIKE' });
 
-        return res.json(success(results));
+        const result = statusCode ? "success" : "failed";
+
+        return res.json(success({ "data": result }));
     } catch (err) {
         return CommonError(req, err, res);
     }
@@ -26,9 +28,11 @@ api.post('/like/unlike', CheckAuth, async (req, res) => {
         const { episodeId, serieId } = req.body;
         const userId = req.userInfo && req.userInfo._id ? req.userInfo._id : '';
 
-        const results = await likeToggle({ userId, serieId, episodeId, status: 'UNLIKE' });
+        const statusCode = await likeToggle({ userId, serieId, episodeId, status: 'UNLIKE' });
 
-        return res.json(success(results));
+        const result = statusCode ? "success" : "failed";
+
+        return res.json(success({ "data": result }));
     } catch (err) {
         return CommonError(req, err, res);
     }

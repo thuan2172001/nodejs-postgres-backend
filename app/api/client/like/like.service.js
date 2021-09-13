@@ -19,23 +19,27 @@ export const likeToggle = async ({ userId, episodeId, serieId, status }) => {
 
     if (serie && episode) throw new Error('LIKE.SERIE_AND_EPISODE_INVALID');
 
-    let result;
+    let result = false;
+
+    console.log('debug')
+
+    console.log({ userId, serieId, episodeId })
+
+    const foundItem = await Likes.findOne({ userId, serieId, episodeId })
 
     if (status == 'LIKE') {
+        if (foundItem) throw new Error('LIKE.ALREADY_LIKED');
         result = await Likes.create({
             userId,
             serieId,
             episodeId,
         })
     } else {
-        result = await Likes.destroy({
-            where: {
-                userId,
-                serieId,
-                episodeId,
-            }
-        })
+        if (!foundItem) throw new Error('LIKE.UNLIKE_BUT_NOT_FOUND');
+        console.log({ foundItem })
+        result = await Likes.destroy({ where: { id: foundItem.dataValues.id } })
+        console.log({ result })
     }
 
-    return result;
+    return true;
 }

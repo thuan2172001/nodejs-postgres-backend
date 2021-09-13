@@ -85,7 +85,7 @@ export const CheckAuth = (req, res, next) => {
 				if (ByPassAuth(req, res, next)) return;
 				return res.json(unauthorized('AUTH.ERROR.NEED_TO_CHANGE_PASSWORD'));
 			}
-			if (CHECK_REQUEST_SIGNATURE === 'true') {
+			if (CHECK_REQUEST_SIGNATURE === 'false') {
 				if (req.method !== 'GET') {
 					const { _signature, _actionType, _timestamp } = req.body;
 					const GetActionModule = (_url) => {
