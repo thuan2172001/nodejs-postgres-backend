@@ -26,7 +26,7 @@ export const getById = async ({serieId}) => {
 
     const episodes = await Episodes.findAll({where: {serieId: serieId}});
 
-    const likes = await Likes.findAll({ where: { episodeId } })
+    const likes = await Likes.findAll({ where: { serieId } })
 
     const result = {
         ...serie.dataValues,

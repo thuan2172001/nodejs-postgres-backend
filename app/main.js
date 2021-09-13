@@ -32,7 +32,7 @@ module.exports = () => {
 
 	console.log({ url });
 
-	const Sql = new Sequelize(url);
+	const Sql = new Sequelize(url, { logging: false });
 
 	const errMes = {};
 
