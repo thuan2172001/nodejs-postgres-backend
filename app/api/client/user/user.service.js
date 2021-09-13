@@ -1,5 +1,6 @@
 import { Users } from "../../../models/user";
 import { Carts } from "../../../models/cart";
+import { Episodes } from "../../../models/episode";
 
 const { DataTypes } = require('sequelize');
 const uuidv1 = require('uuidv1');
@@ -11,7 +12,35 @@ export const getCart = async ({ userId }) => {
 
     const cart = await Carts.findOne({ where: { userId } });
 
-    const result = cart.dataValues?.cartItems;
+    const episodesId = cart.dataValues?.cartItems;
+
+    let result = [];
+
+    await Promise.all(episodesId.map(async (episodeId) => {
+        const episodeData = await Episodes.findOne({ episodeId })
+        result.push(episodeData.dataValues)
+    }))
+
+    return result;
+}
+
+export const updateCart = async ({ userId, cartItems }) => {
+    const user = await Users.findOne({ where: { _id: userId } });
+
+    if (!user) throw new Error('USER.USER_NOT_FOUND');
+
+    const cart = await Carts.findOne({ where: { userId } });
+
+    if (!cart) {
+        const newCart = await Carts.create({
+            cartId: uuidv1(),
+            userId,
+            cartItems,
+        })
+        return newCart;
+    }
+
+    const result = await Carts.update({ cartItems: cartItems }, { where: { userId: userId } })
 
     return result;
 }
