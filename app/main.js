@@ -12,6 +12,7 @@ import {
 	PG_PASS,
 	PG_DB,
 } from './environment';
+import { generateEpisodeData } from './seed-data/data/auto-generator';
 
 const cors = require('cors');
 const bodyParser = require('body-parser');
@@ -26,6 +27,8 @@ module.exports = () => {
 	console.log('Bootstrap starting time', new Date());
 
 	let url = `postgres://${PG_USER}:${PG_PASS}@${PG_URL}:${PG_PORT}/${PG_DB}`
+
+	generateEpisodeData().then(() => console.log(1));
 
 	console.log({ url });
 
