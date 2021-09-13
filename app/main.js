@@ -28,7 +28,7 @@ module.exports = () => {
 
 	let url = `postgres://${PG_USER}:${PG_PASS}@${PG_URL}:${PG_PORT}/${PG_DB}`
 
-	generateEpisodeData().then(() => console.log(1));
+	// generateEpisodeData().then(() => console.log(1));
 
 	console.log({ url });
 

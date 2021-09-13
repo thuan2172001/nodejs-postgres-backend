@@ -1,6 +1,7 @@
 import { SEED_DATA } from '../environment';
 import { generateCategory } from './seed-category';
 import { generateEpisode } from './seed-episode';
+import { generateLikes } from './seed-like';
 import { generateSerie } from './seed-serie';
 import { generateUser } from './seed-user';
 
@@ -15,4 +16,5 @@ const _seed = async () => {
     await generateSerie();
     await generateEpisode();
     await generateUser();
+    await generateLikes();
 };
