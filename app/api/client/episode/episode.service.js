@@ -30,8 +30,9 @@ export const getById = async ({ userId, episodeId }) => {
             ...episode.dataValues,
             category,
             serie,
-            likes: likes.length ? (likes.length + 1000) : 1000,
+            likes: (likes.length || 0) + episode.dataValues.likeInit,
             alreadyLiked: isLike !== null,
+            likeInit: 0,
         }
     };
 

@@ -12,7 +12,7 @@ import {
 	PG_PASS,
 	PG_DB,
 } from './environment';
-import { generateEpisodeData } from './seed-data/data/auto-generator';
+// import { generateEpisodeData } from './seed-data/data/auto-generator';
 
 const cors = require('cors');
 const bodyParser = require('body-parser');

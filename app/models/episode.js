@@ -32,8 +32,8 @@ const Episodes = Sql.define('episodes', {
     price: {
         type: DataTypes.STRING,
     },
-    timeFirstPublished: {
-        type: DataTypes.STRING,
+    likeInit: {
+        type: DataTypes.INTEGER,
     },
 }, {
     // disable the modification of table names; By default, sequelize will automatically

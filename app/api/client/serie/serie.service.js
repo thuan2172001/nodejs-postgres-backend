@@ -16,7 +16,7 @@ export const getAll = async ({ userId = null, page = 1, limit = 100 }) => {
     if (!userId) return seriesData;
 
     await Promise.all(seriesData.map(async (serieData) => {
-        const liked = await Likes.findOne({ where: { episodeId: serieData.serieId, userId } }) || null;
+        const liked = await Likes.findOne({ where: { serieId: serieData.serieId, userId } }) || null;
         const serieFinalData = { ...serieData.dataValues, alreadyLiked: liked !== null }
         results.push(serieFinalData);
     }))
@@ -44,7 +44,7 @@ export const getById = async ({ userId = null, serieId }) => {
     if (!userId) return {
         ...serie.dataValues,
         category: category,
-        episodes,
+        episodes: episodesData,
         likes: likes.length ? (likes.length + 1000) : 1000,
     }
 
