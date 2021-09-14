@@ -17,7 +17,7 @@ export const getCart = async ({ userId }) => {
     let result = [];
 
     await Promise.all(episodesId.map(async (episodeId) => {
-        const episodeData = await Episodes.findOne({ episodeId })
+        const episodeData = await Episodes.findOne({ where: { episodeId } })
         result.push(episodeData.dataValues)
     }))
 

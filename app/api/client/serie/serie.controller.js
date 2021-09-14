@@ -13,8 +13,8 @@ const api = express.Router();
 api.get('/serie', skipGuestQuery(CheckAuth), async (req, res) => {
   try {
     const { page, limit } = req.query;
-    // const userId = req.userInfo && req.userInfo._id ? req.userInfo._id : '';
-    const results = await getAll({ page, limit });
+    const userId = req.userInfo && req.userInfo._id ? req.userInfo._id : '';
+    const results = await getAll({ userId, page, limit });
 
     return res.json(success(results));
   } catch (err) {
@@ -25,8 +25,8 @@ api.get('/serie', skipGuestQuery(CheckAuth), async (req, res) => {
 api.get('/serie/:serieId', skipGuestQuery(CheckAuth), async (req, res) => {
   try {
     const { serieId } = req.params;
-    // const userId = req.userInfo && req.userInfo._id ? req.userInfo._id : '';
-    const results = await getById({ serieId });
+    const userId = req.userInfo && req.userInfo._id ? req.userInfo._id : '';
+    const results = await getById({ userId, serieId });
 
     return res.json(success(results));
   } catch (err) {

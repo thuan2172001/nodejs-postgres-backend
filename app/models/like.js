@@ -8,13 +8,11 @@ const { DataTypes } = require('sequelize');
 const Likes = Sql.define('likes', {
     userId: {
         type: DataTypes.UUID,
+        allowNull: true,
     },
     serieId: {
         type: DataTypes.UUID,
         allowNull: true,
-        references: {
-
-        }
     },
     episodeId: {
         type: DataTypes.UUID,

@@ -3,7 +3,7 @@ import { Users } from "../../../models/user";
 import { Episodes } from "../../../models/episode";
 import { Likes } from "../../../models/like";
 
-export const likeToggle = async ({ userId, episodeId, serieId, status }) => {
+export const likeToggle = async ({ userId, episodeId = null, serieId = null, status }) => {
 
     if (!userId) throw new Error('LIKE.USER_NOT_FOUND');
 
