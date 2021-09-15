@@ -30,6 +30,7 @@ Likes.belongsTo(Episodes, {
     onDelete: "CASCADE",
     as: "createdBy",
 })
+
 Episodes.hasMany(Likes, { foreignKey: 'episodeId' })
 Series.hasMany(Likes, { foreignKey: 'serieId' })
 

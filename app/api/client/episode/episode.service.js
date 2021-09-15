@@ -2,6 +2,7 @@ import { Series } from "../../../models/serie";
 import { Categories } from "../../../models/category";
 import { Episodes } from "../../../models/episode";
 import { Likes } from "../../../models/like";
+import { Bookshelves } from "../../../models/bookshelf";
 
 const { DataTypes } = require('sequelize');
 const uuidv1 = require('uuidv1');
@@ -25,6 +26,18 @@ export const getById = async ({ userId, episodeId }) => {
 
     const isLike = userId ? await Likes.findOne({ where: { userId, episodeId } }) : null;
 
+    let isBought = false;
+
+    const bookshelf = userId ? await Bookshelves.findOne({ where: { userId } }) : null;
+
+    if (bookshelf) {
+        const episodesId = bookshelf.dataValues.bookshelfItems;
+        console.log({ episodesId, episodeId })
+        if (episodesId.includes(episodeId)) {
+            isBought = true;
+        }
+    }
+
     const result = {
         data: {
             ...episode.dataValues,
@@ -33,6 +46,7 @@ export const getById = async ({ userId, episodeId }) => {
             likes: (likes.length || 0) + episode.dataValues.likeInit,
             alreadyLiked: isLike !== null,
             likeInit: 0,
+            isBought,
         }
     };
 

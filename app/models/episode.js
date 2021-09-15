@@ -1,4 +1,5 @@
 import { Sql } from '../database';
+import {Series} from '../models/serie';
 
 const { DataTypes } = require('sequelize');
 
@@ -41,5 +42,13 @@ const Episodes = Sql.define('episodes', {
     // if you don't want that, set the following
     freezeTableName: true,
 });
+
+Series.hasMany(Episodes, { foreignKey: 'serieId' })
+
+Episodes.belongsTo(Series, {
+    foreignKey: 'serieId',
+    onDelete: "CASCADE",
+    as: "createdBy",
+})
 
 module.exports.Episodes = Episodes;

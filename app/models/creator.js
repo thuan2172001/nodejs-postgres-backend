@@ -1,31 +1,30 @@
 import { Sql } from '../database';
-import { Categories } from './category';
 
 const { DataTypes } = require('sequelize');
 
-const Series = Sql.define('series', {
-    serieId: {
+const Creators = Sql.define('creators', {
+    _id: {
         type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV1,
+        allowNull: false,
         primaryKey: true,
     },
-    serieName: {
+    username: {
         type: DataTypes.STRING,
     },
-    categoryId: {
+    email: {
         type: DataTypes.STRING,
     },
-    description: {
-        type: DataTypes.TEXT,
-    },
-    thumbnail: {
+    fullName: {
         type: DataTypes.STRING,
     },
-    cover: {
+    publicKey: {
         type: DataTypes.STRING,
     },
-    isPublished: {
-        type: DataTypes.BOOLEAN,
+    encryptedPrivateKey: {
+        type: DataTypes.STRING,
+    },
+    role: {
+        type: DataTypes.STRING,
     },
 }, {
     // disable the modification of table names; By default, sequelize will automatically
@@ -34,12 +33,4 @@ const Series = Sql.define('series', {
     freezeTableName: true,
 });
 
-Categories.hasMany(Series, { foreignKey: 'categoryId' })
-
-Series.belongsTo(Categories, {
-    foreignKey: 'categoryId',
-    onDelete: "CASCADE",
-    as: "createdBy",
-})
-
-module.exports.Series = Series;
+module.exports.Creators = Creators;

@@ -17,8 +17,6 @@ export const generateBookshelf = async () => {
         await Promise.each(content, async (line) => {
             const field = cleanField(line.split(';'));
 
-            console.log({ field })
-
             const itemsData = field[header.indexOf('bookshelfItems')];
 
             const items = itemsData.slice(1, itemsData.length - 1).split(',');

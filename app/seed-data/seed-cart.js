@@ -17,8 +17,6 @@ export const generateCarts = async () => {
         await Promise.each(content, async (line) => {
             const field = cleanField(line.split(';'));
 
-            console.log({ field })
-
             const cartItemsData = field[header.indexOf('cartItems')];
 
             const cartItems = cartItemsData.slice(1, cartItemsData.length - 1).split(',');

@@ -10,7 +10,7 @@ import {
 
 const api = express.Router();
 
-api.get('/admin/user', async (req, res) => {
+api.get('/admin/users', async (req, res) => {
   try {
     const args = req.query;
     const results = await getAll(args, 'Users');
@@ -21,7 +21,7 @@ api.get('/admin/user', async (req, res) => {
   }
 });
 
-api.get('/admin/episode', async (req, res) => {
+api.get('/admin/episodes', async (req, res) => {
   try {
     const args = req.query;
     const results = await getAll(args, 'Episodes');
@@ -32,7 +32,7 @@ api.get('/admin/episode', async (req, res) => {
   }
 });
 
-api.get('/admin/category', async (req, res) => {
+api.get('/admin/categories', async (req, res) => {
   try {
     const args = req.query;
     const results = await getAll(args, 'Categories');
@@ -43,7 +43,7 @@ api.get('/admin/category', async (req, res) => {
   }
 });
 
-api.get('/admin/serie', async (req, res) => {
+api.get('/admin/series', async (req, res) => {
   try {
     const args = req.query;
     const results = await getAll(args, 'Series');
