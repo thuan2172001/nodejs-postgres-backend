@@ -33,5 +33,11 @@ const Series = Sql.define('series', {
     // if you don't want that, set the following
     freezeTableName: true,
 });
+Categories.hasMany(Series, { foreignKey: 'categoryId' })
 
+Series.belongsTo(Categories, {
+    foreignKey: 'categoryId',
+    onDelete: "CASCADE",
+    as: "createdBy",
+})
 module.exports.Series = Series;

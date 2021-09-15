@@ -5,6 +5,7 @@ import { generateEpisode } from './seed-episode';
 import { generateLikes } from './seed-like';
 import { generateSerie } from './seed-serie';
 import { generateUser } from './seed-user';
+import {generateBookshelf} from "./seed-bookshelf";
 
 export const seed = async () => {
     if (SEED_DATA === 'true') {
@@ -19,4 +20,5 @@ const _seed = async () => {
     await generateUser();
     await generateCarts();
     await generateLikes();
+    await generateBookshelf();
 };

@@ -1,4 +1,6 @@
 import { Sql } from '../database';
+import {Series} from "./serie";
+import {Bookshelf} from "./bookshelf";
 
 const { DataTypes } = require('sequelize');
 
@@ -38,5 +40,6 @@ const Users = Sql.define('users', {
 //         return Users.bulkCreate(data);
 //     }).catch(err => console.log(err))
 // });
+// Users.hasOne(Bookshelf, { foreignKey: 'userId' })
 
 module.exports.Users = Users;

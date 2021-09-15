@@ -1,16 +1,16 @@
 import { Sql } from '../database';
-import { Series } from './serie';
+import { Users } from '../models/user';
 
 const { DataTypes } = require('sequelize');
 
-const Categories = Sql.define('categories', {
-    categoryId: {
+const Bookshelves = Sql.define('bookshelves', {
+    userId: {
         type: DataTypes.STRING,
         allowNull: false,
         primaryKey: true,
     },
-    categoryName: {
-        type: DataTypes.STRING,
+    bookshelfItems: {
+        type: DataTypes.ARRAY(DataTypes.UUID),
     },
 }, {
     // disable the modification of table names; By default, sequelize will automatically
@@ -19,5 +19,4 @@ const Categories = Sql.define('categories', {
     freezeTableName: true,
 });
 
-
-module.exports.Categories = Categories;
+module.exports.Bookshelves = Bookshelves;
