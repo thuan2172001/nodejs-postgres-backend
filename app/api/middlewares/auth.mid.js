@@ -2,18 +2,29 @@ import {
 	API_PREFIX, CHECK_AUTH, CHECK_CHANGE_PASSWORD, CHECK_REQUEST_SIGNATURE,
 } from '../../environment';
 import { Users } from '../../models/user';
+import { Creators } from '../../models/creator';
 
 const { unauthorized, badRequest } = require('../../utils/response-utils');
 const { VerifyMessage } = require('../../utils/crypto-utils');
 
-function findUserByUsername(username) {
-	return new Promise((resolve, reject) => {
-		Users.findOne({
-			where: { username },
-		})
-			.then(data => resolve(data))
-			.catch(err => reject(err))
-	});
+const findUserByUsername = async (username) => {
+	const user = await Users.findOne({
+		where: { username },
+	})
+
+	if (user) {
+		return user;
+	}
+
+	const creator = await Creators.findOne({
+		where: { username },
+	})
+
+	if (creator) {
+		return creator;
+	}
+
+	return null;
 }
 
 const ByPassAuth = (req, res, next) => {
@@ -60,6 +71,7 @@ export const CheckAuth = (req, res, next) => {
 			return;
 		}
 		findUserByUsername(authInfo.certificateInfo.username).then((userInfo) => {
+			console.log({ userInfo })
 			if (!userInfo) {
 				if (ByPassAuth(req, res, next)) return;
 

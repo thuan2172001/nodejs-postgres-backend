@@ -6,6 +6,7 @@ const {
   serverError,
 } = require('../../../../utils/response-utils');
 const { Users } = require('../../../../models/user');
+const { Creators } = require('../../../../models/creator');
 const { error } = require('../../../../services/logger');
 
 api.post('/auth/credential', async (req, res) => {
@@ -16,9 +17,17 @@ api.post('/auth/credential', async (req, res) => {
       throw new Error('AUTH.ERROR.INVALID_REQUEST');
     } else {
       const user = await Users.findOne({ where: { username } });
+
       if (user) {
         return res.json(success(user));
       }
+
+      const creator = await Creators.findOne({ where: { username } });
+      
+      if (creator) {
+        return res.json(success(creator));
+      }
+
       throw new Error('AUTH.ERROR.USER_NOT_FOUND');
     }
   } catch (err) {
@@ -32,9 +41,19 @@ api.post('/auth/ping', CheckAuth, async (req, res) => {
     const user = await Users.findOne({
       where: { username: req.body.certificateInfo.username },
     });
+
     if (user) {
       return res.json(success(user));
     }
+
+    const creator = await Creators.findOne({
+      where: { username: req.body.certificateInfo.username },
+    });
+
+    if (creator) {
+      return res.json(success(creator));
+    }
+
     throw new Error('AUTH.ERROR.USER_NOT_FOUND');
   } catch (err) {
     error(`${req.method} ${req.originalUrl}`, err.message);

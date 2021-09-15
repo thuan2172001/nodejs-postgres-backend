@@ -12,6 +12,8 @@ export const getCartData = async ({ userId }) => {
 
     const cart = await Carts.findOne({ where: { userId } });
 
+    if (!cart) return []
+
     const episodesId = cart.dataValues?.cartItems;
 
     let result = [];
@@ -30,6 +32,8 @@ export const getCart = async ({ userId }) => {
     if (!user) throw new Error('USER.USER_NOT_FOUND');
 
     const cart = await Carts.findOne({ where: { userId } });
+
+    if (!cart) return []
 
     const episodesId = cart.dataValues?.cartItems || [];
 
