@@ -15,7 +15,16 @@ services:
     # needed because the postgres container does not provide a healthcheck
     # options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     networks:
-      - web-server 
+      - web-server
+  stripe:
+    image: stripe/stripe-cli
+    restart: always
+    environment:
+      - STRIPE_DEVICE_NAME
+      - STRIPE_API_KEY
+    command: listen --forward-to ${SERVER_WEBHOOK_URL}
+    networks:
+      - web-server
   server:
     #    extends:
     #      file: docker-compose.yml
@@ -58,6 +67,12 @@ services:
       - UPLOAD_DIR
       - UPLOAD_PATH
       - URL
+      - STRIPE_TOKEN
+      - STRIPE_API_KEY
+      - STRIPE_PUBLIC_KEY
+      - AWS_SECRET_ACCESS_KEY
+      - AWS_ACCESS_KEY_ID
+      - AWS_BUCKET_NAME
     ports:
       - ${SERVER_PORT}:${SERVER_PORT}
       - 9229:9229

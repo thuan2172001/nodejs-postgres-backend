@@ -21,6 +21,14 @@ export const { MEMORY_RESERVATIONS } = process.env;
 export const { UPLOAD_DIR } = process.env;
 export const { URL } = process.env;
 
+export const { STRIPE_TOKEN } = process.env;
+export const { STRIPE_API_KEY } = process.env;
+export const { STRIPE_PUBLIC_KEY } = process.env;
+
+export const { AWS_BUCKET_NAME } = process.env;
+export const { AWS_ACCESS_KEY_ID } = process.env;
+export const { AWS_SECRET_ACCESS_KEY } = process.env;
+
 export const IMAGE = ['.svg', '.png', '.jpg', '.jpeg'];
 export const WATCH = ['.mp4', '.mpeg4'];
 export const READ = ['.pdf'];

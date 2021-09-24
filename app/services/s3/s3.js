@@ -22,7 +22,6 @@ AWS.config.update({
 	secretAccessKey: AWS_SECRET_ACCESS_KEY,
 	region: 'ap-southeast-1',
 });
-import log from '../logger/logger';
 
 const extension_allowed = {
 	image: IMAGE,
@@ -77,7 +76,6 @@ const createParamsFromFile = (key, filePath = null) => {
 
 const uploadBase64 = (key, data) =>
 	new Promise((res, rej) => {
-		log.info('function');
 		const buf = Buffer.from(data, 'base64');
 		const params = {
 			Key: key,
@@ -88,7 +86,7 @@ const uploadBase64 = (key, data) =>
 		};
 		s3.putObject(params, function (err, data) {
 			if (err) {
-				log.error(err.message);
+				console.log(err.message);
 				rej(`Error: ${key}`);
 			}
 			res('successfully uploaded the image!');
@@ -230,7 +228,7 @@ const deleteByListKey = async (list) => {
 	};
 	return Promise.all(
 		list.map((key) => {
-			log.info('Delete', { ...params, Key: key });
+			console.log('Delete', { ...params, Key: key });
 			s3.deleteObject(
 				{ ...params, Key: key },
 				(err, data) =>
@@ -252,7 +250,7 @@ const deleteListByPrefix = (prefix) =>
 			const status = await deleteByListKey(list);
 			res(status);
 		} catch (err) {
-			log.error(err.message);
+			console.log(err.message);
 			rej(err);
 		}
 	});

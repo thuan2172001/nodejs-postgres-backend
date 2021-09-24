@@ -1,6 +1,6 @@
 import { Sql } from '../database';
-import {Series} from "./serie";
-import {Bookshelf} from "./bookshelf";
+import { Series } from "./serie";
+import { Bookshelf } from "./bookshelf";
 
 const { DataTypes } = require('sequelize');
 
@@ -27,6 +27,10 @@ const Users = Sql.define('users', {
     },
     role: {
         type: DataTypes.STRING,
+    },
+    stripeAccount: {
+        type: DataTypes.STRING,
+        allowNull: true,
     },
 }, {
     // disable the modification of table names; By default, sequelize will automatically

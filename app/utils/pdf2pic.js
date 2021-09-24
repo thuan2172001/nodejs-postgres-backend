@@ -6,7 +6,6 @@ const uuid = require('uuid');
 const { streamToBuffer } = require('./file-utils');
 const BBPromise = require('bluebird');
 const events = require('events');
-import log from '../services/logger/logger';
 
 const getPageSize = (buffer) =>
 	new Promise((res, rej) => {
@@ -62,7 +61,7 @@ const splitEvent = async (req, file, cb) => {
 			});
 		cb(null, event);
 	} catch (err) {
-		log.error(err.message)
+		console.log(err.message)
 		cb(err, null)
 	}
 	
@@ -74,7 +73,7 @@ const createSpliter = async (req, file, cb) => {
 			file.originalname,
 			path.extname(file.originalname)
 		);
-		log.info('load buffer ', folder);
+		console.log('load buffer ', folder);
 		const buffer = await streamToBuffer(file.stream);
 		const { pageNumber } = await getPageSize(buffer);
 		// if (pageNumber > 100) return cb(new Error("Too many pages!!"))
@@ -105,7 +104,7 @@ const createSpliter = async (req, file, cb) => {
 			return cb(null, data);
 		});
 	} catch (err) {
-		log.error(err.message);
+		console.log(err.message);
 		cb(err);
 	}
 };

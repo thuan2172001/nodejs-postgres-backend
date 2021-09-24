@@ -1,6 +1,7 @@
 import faker from 'faker';
 import { getCSVFiles, getContentCSVFiles, cleanField } from './scanDataFile';
 import { Users } from '../models/user';
+import { createStripeAccount } from '../api/client/payment/stripe.service';
 
 const Promise = require('bluebird');
 
@@ -27,12 +28,20 @@ export const generateUser = async () => {
                 encryptedPrivateKey:
                     'U2FsdGVkX1849aMg8O6GLRVrFSLd2aQI4cRaS4Ql2nZr8p+smv5O9koFn+J6EkcwaZF6u8dGb3tJEXg35q0raA==',
             };
-            dataSeed.push(item);
+
+            const stripeAccount = await createStripeAccount({
+                email: item.email,
+                metatdata: item,
+            })
+
+            const finalItem = { ...item, stripeAccount: stripeAccount.id }
+
+            dataSeed.push(finalItem);
         });
 
         await Users.sync({ force: false }).then(() => {
             return Users.bulkCreate(dataSeed);
-        }).catch(err => console.log({"userSeedErr" :err}));
+        }).catch(err => console.log({ "userSeedErr": err }));
 
         return dataSeed;
 
