@@ -87,3 +87,15 @@ export const createSerie = async ({ cover, thumbnail, serieName, categoryId, des
     })
     return result;
 };
+
+export const editSerie = async ({ userId, cover, thumbnail, serieName, categoryId, description }) => {
+    const user = await Users.findOne({ where: { _id: userId } });
+
+    if (!user) throw new Error('USER.USER_NOT_FOUND');
+
+    if (!fullName) throw new Error('USER.EDIT_USER.FULLNAME_CAN_EMPTY')
+
+    const result = await Users.update({ cover, thumbnail, serieName, categoryId, description }, { where: { _id: userId } })
+
+    return result;
+}

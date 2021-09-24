@@ -5,7 +5,7 @@ import {
   success,
 } from '../../../utils/response-utils';
 import {
-  getAll, getById, createSerie
+  getAll, getById, createSerie, editSerie
 } from './serie.service';
 
 const api = express.Router();
@@ -41,6 +41,19 @@ api.post('/serie', async (req, res) => {
     const results = await createSerie({ cover, thumbnail, serieName, categoryId, description, userId });
 
     return res.json(success(results));
+  } catch (err) {
+    return CommonError(req, err, res);
+  }
+});
+
+api.put('/serie/:serieId', async (req, res) => {
+  try {
+    const userId = req.userInfo && req.userInfo._id ? req.userInfo._id : '';
+    const { cover, thumbnail, serieName, categoryId, description } = req.body;
+    const statusCode = await editSerie({ cover, thumbnail, serieName, categoryId, description, userId });
+    const result = statusCode > 0 ? 'success' : 'failed';
+
+    return res.json(success(result));
   } catch (err) {
     return CommonError(req, err, res);
   }

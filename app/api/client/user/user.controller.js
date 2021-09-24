@@ -4,7 +4,7 @@ import CommonError from '../../library/error';
 import {
     success,
 } from '../../../utils/response-utils';
-import { getCart, updateCart, getCartData } from "./user.service";
+import { getCart, updateCart, getCartData, editUser } from "./user.service";
 
 const api = express.Router();
 
@@ -43,5 +43,23 @@ api.put('/user/cart', CheckAuth, async (req, res) => {
         return CommonError(req, err, res);
     }
 });
+
+api.put('/user/:userId', CheckAuth, async (req, res) => {
+    try {
+        const userId = req.userInfo && req.userInfo._id ? req.userInfo._id : '';
+
+        console.log(req.body)
+
+        const { fullName, age, phoneNumber } = req.body;
+
+        const statusCode = await editUser({ userId, fullName, age, phoneNumber });
+
+        const results = statusCode > 0 ? 'success' : 'failed';
+
+        return res.json(success(results));
+    } catch (err) {
+        return CommonError(req, err, res);
+    }
+})
 
 module.exports = api;

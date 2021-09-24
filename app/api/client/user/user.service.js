@@ -60,3 +60,16 @@ export const updateCart = async ({ userId, cartItems }) => {
 
     return result;
 }
+
+
+export const editUser = async ({ userId, fullName, age, phoneNumber }) => {
+    const user = await Users.findOne({ where: { _id: userId } });
+
+    if (!user) throw new Error('USER.USER_NOT_FOUND');
+
+    if (!fullName) throw new Error('USER.EDIT_USER.FULLNAME_CAN_EMPTY')
+
+    const result = await Users.update({ fullName, age, phoneNumber }, { where: { _id: userId } })
+
+    return result;
+}

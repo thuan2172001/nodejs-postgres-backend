@@ -32,6 +32,14 @@ const Users = Sql.define('users', {
         type: DataTypes.STRING,
         allowNull: true,
     },
+    phoneNumber: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
+    age: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
 }, {
     // disable the modification of table names; By default, sequelize will automatically
     // transform all passed model names (first parameter of define) into plural.
