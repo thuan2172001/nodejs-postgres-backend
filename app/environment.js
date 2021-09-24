@@ -20,6 +20,9 @@ export const { MEMORY_LIMIT } = process.env;
 export const { MEMORY_RESERVATIONS } = process.env;
 export const { UPLOAD_DIR } = process.env;
 export const { URL } = process.env;
+export const { FRONTEND_BASE_URL } = process.env;
+export const { MAIL_NAME } = process.env;
+export const { MAIL_PASS } = process.env;
 
 export const { STRIPE_TOKEN } = process.env;
 export const { STRIPE_API_KEY } = process.env;

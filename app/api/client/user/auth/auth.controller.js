@@ -1,4 +1,5 @@
 import { CheckAuth } from '../../../middlewares/auth.mid';
+import { sendEmail } from '../../common-service/mail.service';
 
 const api = require('express').Router();
 const {
@@ -116,6 +117,27 @@ api.put('/auth/password', CheckAuth, async (req, res) => {
     }
 
     throw new Error('AUTH.ERROR.USER_NOT_FOUND');
+  } catch (err) {
+    return res.json(serverError('AUTH.ERROR.CHANGE_PASSWORD.FAILED'));
+  }
+})
+
+api.post('/auth/forgot-password', CheckAuth, async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await Users.findOne({
+      where: { email }
+    })
+
+    if (!user) throw new Error('AUTH.ERROR.FORGOT_PASSWORD.MAIL_NOT_EXISTS')
+
+    const status = await sendEmail({
+      activeCode: "123456",
+      email,
+      type: 'reset-password',
+    })
+
+    return res.json(success({ results }));
   } catch (err) {
     return res.json(serverError('AUTH.ERROR.CHANGE_PASSWORD.FAILED'));
   }

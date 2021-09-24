@@ -46,6 +46,7 @@
     "pdf2pic": "^2.1.4",
     "run-parallel-limit": "^1.1.0",
     "uuidv1": "^1.6.14",
+    "nodemailer": "^6.5.0",
     "pg": "^8.7.1",
     "aws-sdk": "^2.908.0",
     "stripe": "^8.160.0"
