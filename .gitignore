@@ -38,3 +38,5 @@ yarn-error.log*
 /mobile/build/
 
 uploads/
+yarn.lock
+.env.production

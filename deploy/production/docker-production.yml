@@ -1,0 +1,91 @@
+version: '3.3'
+networks:
+  web-server:
+    name: web-server
+services:
+  postgres:
+    image: postgres:10.8
+    container_name: heroku-dockerize-postgres
+    environment:
+      POSTGRES_USER: ${PG_USER}
+      POSTGRES_PASSWORD: ${PG_PASS}
+      POSTGRES_DB: ${PG_DB}
+      POSTGRES_PORT: ${PG_PORT}
+    ports:
+      - 5432:5432
+    # needed because the postgres container does not provide a healthcheck
+    # options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    networks:
+      - web-server
+  stripe:
+    image: stripe/stripe-cli
+    container_name: heroku-dockerize-stripe
+    restart: always
+    environment:
+      - STRIPE_DEVICE_NAME
+      - STRIPE_API_KEY
+    command: listen --forward-to ${SERVER_WEBHOOK_URL}
+    networks:
+      - web-server
+  server:
+    #    extends:
+    #      file: docker-compose.yml
+    #      service: server
+    image: web-server/web-server
+    container_name: heroku-dockerize-web
+    deploy:
+      resources:
+        limits:
+          memory: ${MEMORY_LIMIT}
+        reservations:
+          memory: ${MEMORY_RESERVATIONS}
+    image: web-server:dev
+    build:
+      context: ../../
+      dockerfile: Dockerfile
+    command:
+      - /bin/bash
+      - -c
+      - |
+        ./wait-for-it.sh postgres:${PG_PORT}
+        yarn start:nodemon
+    volumes:
+      - ../..:/app
+      - /app/.env
+      - /app/node_modules
+    environment:
+      - PROJECT_NAME
+      - SERVER_SECRET
+      - SERVER_PORT
+      - PG_URL
+      - PG_PORT
+      - PG_USER
+      - PG_PASS
+      - PG_DB
+      - PORT
+      - API_PREFIX
+      - CHECK_AUTH
+      - CHECK_REQUEST_SIGNATURE
+      - CHECK_CHANGE_PASSWORD
+      - SEED_DATA
+      - UPLOAD_DIR
+      - UPLOAD_PATH
+      - URL
+      - STRIPE_TOKEN
+      - STRIPE_API_KEY
+      - STRIPE_PUBLIC_KEY
+      - AWS_SECRET_ACCESS_KEY
+      - AWS_ACCESS_KEY_ID
+      - AWS_BUCKET_NAME
+      - MAIL_NAME
+      - MAIL_PASS
+    ports:
+      - ${SERVER_PORT}:${SERVER_PORT}
+      - 9229:9229
+    depends_on:
+      - postgres
+    networks:
+      - web-server
+    restart: always
+    extra_hosts:
+      - "dockerhost:host-gateway"
