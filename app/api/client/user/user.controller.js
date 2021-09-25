@@ -1,10 +1,18 @@
 import express from 'express';
 import { CheckAuth, skipGuestQuery } from '../../middlewares/auth.mid';
 import CommonError from '../../library/error';
+import { success, } from '../../../utils/response-utils';
 import {
-    success,
-} from '../../../utils/response-utils';
-import { getCart, updateCart, getCartData, editUser, createUser, editUserStatus } from "./user.service";
+    getCart,
+    updateCart,
+    getCartData,
+    editUser,
+    createUser,
+    editUserStatus,
+    getBookshelfData,
+    getBookshelf,
+    updateBookshelf
+} from "./user.service";
 
 const api = express.Router();
 
@@ -35,6 +43,42 @@ api.put('/user/cart', CheckAuth, async (req, res) => {
         const userId = req.userInfo && req.userInfo._id ? req.userInfo._id : '';
         const { cartItems } = req.body
         const statusCode = await updateCart({ userId, cartItems });
+
+        const result = statusCode > 0 ? 'success' : 'failed';
+
+        return res.json(success(result));
+    } catch (err) {
+        return CommonError(req, err, res);
+    }
+});
+
+api.get('/user/bookshelf-data', CheckAuth, async (req, res) => {
+    try {
+        const userId = req.userInfo && req.userInfo._id ? req.userInfo._id : '';
+        const results = await getBookshelfData({ userId });
+
+        return res.json(success(results));
+    } catch (err) {
+        return CommonError(req, err, res);
+    }
+});
+
+api.get('/user/bookshelf', CheckAuth, async (req, res) => {
+    try {
+        const userId = req.userInfo && req.userInfo._id ? req.userInfo._id : '';
+        const results = await getBookshelf({ userId });
+
+        return res.json(success(results));
+    } catch (err) {
+        return CommonError(req, err, res);
+    }
+});
+
+api.put('/user/bookshelf', CheckAuth, async (req, res) => {
+    try {
+        const userId = req.userInfo && req.userInfo._id ? req.userInfo._id : '';
+        const { bookshelfItems } = req.body
+        const statusCode = await updateBookshelf({ userId, bookshelfItems });
 
         const result = statusCode > 0 ? 'success' : 'failed';
 

@@ -1,5 +1,5 @@
 import { Sql } from '../database';
-import {Series} from '../models/serie';
+import { Series } from '../models/serie';
 
 const { DataTypes } = require('sequelize');
 
@@ -35,6 +35,9 @@ const Episodes = Sql.define('episodes', {
     },
     likeInit: {
         type: DataTypes.INTEGER,
+    },
+    isPublished: {
+        type: DataTypes.BOOLEAN,
     },
 }, {
     // disable the modification of table names; By default, sequelize will automatically

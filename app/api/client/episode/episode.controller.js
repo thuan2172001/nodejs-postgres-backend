@@ -4,9 +4,22 @@ import CommonError from '../../library/error';
 import {
     success,
 } from '../../../utils/response-utils';
-import { getById } from "./episode.service";
+import { getById, editEpisodeStatus } from "./episode.service";
 
 const api = express.Router();
+
+api.post('/episode/status', CheckAuth, async (req, res) => {
+    try {
+        const userId = req.userInfo && req.userInfo._id ? req.userInfo._id : '';
+        const { type, episodeId } = req.body;
+        const statusCode = await editEpisodeStatus({ episodeId, type, userId });
+        const result = statusCode > 0 ? 'success' : 'failed';
+
+        return res.json(success(result));
+    } catch (err) {
+        return CommonError(req, err, res);
+    }
+})
 
 api.get('/episode/:episodeId', skipGuestQuery(CheckAuth), async (req, res) => {
     try {

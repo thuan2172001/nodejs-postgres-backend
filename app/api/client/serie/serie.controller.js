@@ -5,7 +5,7 @@ import {
   success,
 } from '../../../utils/response-utils';
 import {
-  getAll, getById, createSerie, editSerie
+  getAll, getById, createSerie, editSerie, editSerieStatus
 } from './serie.service';
 
 const api = express.Router();
@@ -46,13 +46,24 @@ api.post('/serie', CheckAuth, async (req, res) => {
   }
 });
 
+api.post('/serie/status', CheckAuth, async (req, res) => {
+  try {
+    const userId = req.userInfo && req.userInfo._id ? req.userInfo._id : '';
+    const { type, serieId } = req.body;
+    const statusCode = await editSerieStatus({ serieId, type, userId });
+    const result = statusCode > 0 ? 'success' : 'failed';
+
+    return res.json(success(result));
+  } catch (err) {
+    return CommonError(req, err, res);
+  }
+});
+
 api.put('/serie/:serieId', CheckAuth, async (req, res) => {
   try {
     const userId = req.userInfo && req.userInfo._id ? req.userInfo._id : '';
     const { serieId } = req.params;
     const { cover, thumbnail, serieName, categoryId, description } = req.body;
-    console.log(req.body)
-    console.log({ serieId, userId })
     const statusCode = await editSerie({ serieId, cover, thumbnail, serieName, categoryId, description, userId });
     const result = statusCode > 0 ? 'success' : 'failed';
 
@@ -61,5 +72,6 @@ api.put('/serie/:serieId', CheckAuth, async (req, res) => {
     return CommonError(req, err, res);
   }
 });
+
 
 module.exports = api;

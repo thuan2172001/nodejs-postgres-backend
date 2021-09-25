@@ -1,8 +1,10 @@
 import { Users } from "../../../models/user";
 import { Carts } from "../../../models/cart";
 import { Episodes } from "../../../models/episode";
+import { Bookshelves } from "../../../models/bookshelf";
 import { Creators } from "../../../models/creator";
 import { createStripeAccount } from "../payment/stripe.service";
+import { removeEmptyValueObject } from "../../../utils/validate-utils";
 
 const { DataTypes } = require('sequelize');
 const uuidv1 = require('uuidv1');
@@ -16,7 +18,7 @@ export const getCartData = async ({ userId }) => {
 
     if (!cart) return []
 
-    const episodesId = cart.dataValues?.cartItems;
+    const episodesId = cart.dataValues?.cartItems ?? [];
 
     let result = [];
 
@@ -63,15 +65,70 @@ export const updateCart = async ({ userId, cartItems }) => {
     return result;
 }
 
+export const getBookshelfData = async ({ userId }) => {
+    const user = await Users.findOne({ where: { _id: userId } });
+
+    if (!user) throw new Error('USER.USER_NOT_FOUND');
+
+    const bookshelf = await Bookshelves.findOne({ where: { userId } });
+
+    if (!bookshelf) return []
+
+    const episodesId = bookshelf.dataValues?.bookshelfItems ?? [];
+
+    let result = [];
+
+    await Promise.all(episodesId.map(async (episodeId) => {
+        const episodeData = await Episodes.findOne({ where: { episodeId } })
+        result.push(episodeData.dataValues)
+    }))
+
+    return result;
+}
+
+export const getBookshelf = async ({ userId }) => {
+    const user = await Users.findOne({ where: { _id: userId } });
+
+    if (!user) throw new Error('USER.USER_NOT_FOUND');
+
+    const bookshelf = await Bookshelves.findOne({ where: { userId } });
+
+    if (!bookshelf) return []
+
+    const episodesId = bookshelf.dataValues?.bookshelfItems || [];
+
+    return episodesId;
+}
+
+export const updateBookshelf = async ({ userId, bookshelfItems }) => {
+    const user = await Users.findOne({ where: { _id: userId } });
+
+    if (!user) throw new Error('USER.USER_NOT_FOUND');
+
+    const bookshelf = await Bookshelves.findOne({ where: { userId } });
+
+    if (!bookshelf) {
+        const newBookshelf = await Bookshelves.create({
+            userId,
+            bookshelfItems,
+        })
+        return newBookshelf;
+    }
+
+    const result = await Bookshelves.update({ bookshelfItems: bookshelfItems }, { where: { userId: userId } })
+
+    return result;
+}
+
 
 export const editUser = async ({ userId, fullName, age, phoneNumber }) => {
     const user = await Users.findOne({ where: { _id: userId } });
 
     if (!user) throw new Error('USER.USER_NOT_FOUND');
 
-    if (!fullName) throw new Error('USER.EDIT_USER.FULLNAME_CAN_EMPTY')
+    const data = removeEmptyValueObject({ fullName, age, phoneNumber })
 
-    const result = await Users.update({ fullName, age, phoneNumber }, { where: { _id: userId } })
+    const result = await Users.update({ ...data }, { where: { _id: userId } })
 
     return result;
 }

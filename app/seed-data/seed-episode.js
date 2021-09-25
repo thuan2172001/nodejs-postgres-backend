@@ -28,6 +28,7 @@ export const generateEpisode = async () => {
                 thumbnail: field[header.indexOf('thumbnail')],
                 price: field[header.indexOf('price')],
                 likeInit: field[header.indexOf('likeInit')],
+                isPublish: true,
             };
             dataSeed.push(item);
         });

@@ -105,3 +105,21 @@ export const editSerie = async ({ serieId, userId, cover, thumbnail, serieName, 
 
     return result;
 }
+
+export const editSerieStatus = async ({ serieId, userId, type }) => {
+    const creator = await Creators.findOne({ where: { _id: userId } });
+
+    if (!creator) throw new Error('SERIE.EDIT_SERIE.CREATOR_NOT_FOUND');
+
+    const serie = await Series.findOne({ where: { serieId } });
+
+    if (!serie) throw new Error('SERIE.EDIT_SERIE.SERIE_NOT_FOUND');
+
+    if (type !== 'PUBLISH' && type !== 'UNPUBLISH') throw new Error('SERIE.EDIT_SERIE_STATUS.INVLID_TYPE')
+
+    const isPublished = type === 'PUBLISH' ? true : false;
+
+    const result = await Series.update({ isPublished }, { where: { serieId } })
+
+    return result;
+}
