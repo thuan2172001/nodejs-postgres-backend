@@ -10,11 +10,13 @@ import { removeEmptyValueObject } from '../../../utils/validate-utils';
 const { DataTypes } = require('sequelize');
 const uuidv1 = require('uuidv1');
 
-export const getAll = async ({ userId = null, page = 1, limit = 100, category = null, }) => {
+export const getAll = async ({ userId = null, page = 1, limit = 100, categoryId = null, }) => {
 
-    const queryBy = removeEmptyValueObject({ limit, category })
+    const queryBy = removeEmptyValueObject({ categoryId })
 
-    const seriesData = await Series.findAll({ ...queryBy });
+    console.log({ queryBy })
+
+    const seriesData = await Series.findAll({ where: { ...queryBy }, limit: limit });
 
     let results = []
 

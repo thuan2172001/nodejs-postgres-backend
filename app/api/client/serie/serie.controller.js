@@ -14,7 +14,7 @@ api.get('/serie', skipGuestQuery(CheckAuth), async (req, res) => {
   try {
     const { page, limit, categoryId } = req.query;
     const userId = req.userInfo && req.userInfo._id ? req.userInfo._id : '';
-    const results = await getAll({ userId, page, limit });
+    const results = await getAll({ userId, page, limit, categoryId });
 
     return res.json(success(results));
   } catch (err) {
