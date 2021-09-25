@@ -4,6 +4,7 @@ import { Episodes } from "../../../models/episode";
 import { Likes } from "../../../models/like";
 import { Bookshelves } from "../../../models/bookshelf";
 import { Creators } from "../../../models/creator";
+import { Users } from "../../../models/user";
 
 const { DataTypes } = require('sequelize');
 const uuidv1 = require('uuidv1');
@@ -71,3 +72,13 @@ export const editEpisodeStatus = async ({ episodeId, userId, type }) => {
 
     return result;
 }
+
+export const getFavorEpisodes = async ({ userId }) => {
+    const user = await Users.findOne({ where: { _id: userId } })
+
+    if (!user) throw new Error('EPISDE.GET_FAVORITE.USER_NOT_FOUND')
+
+    const favoriteList = await Likes.findAll({ where: { userId, serieId: null } });
+
+    return favoriteList;
+};

@@ -1,12 +1,13 @@
 import { SEED_DATA } from '../environment';
+import { generateCreator } from './seed-creator';
 import { generateCarts } from './seed-cart';
 import { generateCategory } from './seed-category';
 import { generateEpisode } from './seed-episode';
 import { generateLikes } from './seed-like';
 import { generateSerie } from './seed-serie';
 import { generateUser } from './seed-user';
-import {generateBookshelf} from "./seed-bookshelf";
-import { generateCreator } from './seed-user copy';
+import { generateBookshelf } from "./seed-bookshelf";
+import { generateCode } from './seed-code';
 
 export const seed = async () => {
     if (SEED_DATA === 'true') {
@@ -20,6 +21,7 @@ const _seed = async () => {
     await generateSerie();
     await generateEpisode();
     await generateUser();
+    await generateCode();
     await generateCarts();
     await generateLikes();
     await generateBookshelf();

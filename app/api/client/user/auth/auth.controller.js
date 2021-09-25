@@ -1,4 +1,5 @@
 import { CheckAuth } from '../../../middlewares/auth.mid';
+import { createCode, verifyCode } from '../../common-service/code.service';
 import { sendEmail } from '../../common-service/mail.service';
 
 const api = require('express').Router();
@@ -8,6 +9,7 @@ const {
 } = require('../../../../utils/response-utils');
 const { Users } = require('../../../../models/user');
 const { Creators } = require('../../../../models/creator');
+const { Codes } = require('../../../../models/code');
 const { error } = require('../../../../services/logger');
 
 api.post('/auth/credential', async (req, res) => {
@@ -132,8 +134,10 @@ api.post('/auth/forgot-password', async (req, res) => {
 
     if (!user) throw new Error('AUTH.ERROR.FORGOT_PASSWORD.MAIL_NOT_EXISTS')
 
+    const activeCode = await createCode({ userId: user._id })
+
     const status = await sendEmail({
-      activeCode: "123456",
+      activeCode,
       email,
       type: 'reset-password',
     })
@@ -144,5 +148,43 @@ api.post('/auth/forgot-password', async (req, res) => {
     return res.json(serverError(err.message));
   }
 })
+
+api.put('/auth/reset-password', async (req, res) => {
+  try {
+    const { codeId, userId, publicKey, encryptedPrivateKey } = req.body;
+
+    const verifyStatus = verifyCode({ codeId, userId })
+
+    if (!verifyStatus) throw new Error('AUTH.ERROR.RESET_PASSWORD.FAILED')
+
+    if (!publicKey || !encryptedPrivateKey) throw new Error('AUTH.ERROR.BODY_MISSING_FIELD')
+
+    const user = await Users.findOne({
+      where: { _id: userId },
+    });
+
+    if (user) {
+      const statusCode = await Users.update({ publicKey, encryptedPrivateKey }, { where: { _id: userId } })
+      const result = statusCode > 0 ? 'success' : 'failed';
+      return res.json(success(result))
+    }
+
+    const creator = await Creators.findOne({
+      where: { _id: userId },
+    });
+
+    if (creator) {
+      const statusCode = await Users.update({ publicKey, encryptedPrivateKey }, { where: { _id: userId } })
+      const result = statusCode > 0 ? 'success' : 'failed';
+      return res.json(success(result))
+    }
+
+    return res.json(success({ status }));
+  } catch (err) {
+    error(`${req.method} ${req.originalUrl}`, err.message);
+    return res.json(serverError(err.message));
+  }
+})
+
 
 module.exports = api;

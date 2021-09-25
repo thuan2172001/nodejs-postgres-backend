@@ -15,8 +15,12 @@ export const generateUser = async () => {
 
         let dataSeed = []
 
+        let index = 0;
+
         await Promise.each(content, async (line) => {
             const field = cleanField(line.split(';'));
+
+            index++;
 
             const item = {
                 _id: field[header.indexOf('_id')],
@@ -28,6 +32,8 @@ export const generateUser = async () => {
                 encryptedPrivateKey:
                     'U2FsdGVkX1849aMg8O6GLRVrFSLd2aQI4cRaS4Ql2nZr8p+smv5O9koFn+J6EkcwaZF6u8dGb3tJEXg35q0raA==',
                 isBanned: false,
+                age: 18,
+                phoneNumber: `098898888${index}1`
             };
 
             const stripeAccount = await createStripeAccount({
