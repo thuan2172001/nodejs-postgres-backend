@@ -10,16 +10,21 @@ import { CheckAuth } from '../../middlewares/auth.mid';
 import { badRequest, success } from '../../../utils/response-utils';
 import CommonError from '../../library/error';
 
+const { Creators } = require('../../../models/creator');
+
 const api = express.Router();
 
 api.post('/upload', upload.any(), CheckAuth, async (req, res) => {
-  const creator = await Creator.findOne({user : req.userInfo._id}).lean()
+  const userId = req.userInfo && req.userInfo._id ? req.userInfo._id : '';
+
+  const creator = await Creators.findOne({ where: { _id: userId } })
+
   if (!creator) throw new Error('FILE.UPLOAD.NO_PERMISSION')
 
   upload.single('file')(req, res, (err) => {
     if (err) return res.json(badRequest(err.message));
 
-    if (!req.files) return res.json(badRequest('File is required'));
+    if (!req.files) return res.json(badRequest('FILE.UPLOAD.FILE_IS_REQUIRED'));
 
     const { key, location, pageNumber } = req.files[0];
     return res.json(success({ key, location, pageNumber }));
@@ -29,7 +34,7 @@ api.post('/upload', upload.any(), CheckAuth, async (req, res) => {
 api.get('/sign', async (req, res) => {
   try {
     const { key } = req.query;
-    if (!key) return res.json(badRequest('FILE.SIGN.MISSING_KEY'));
+    if (!key) return res.json(badRequest('FILE.SIGN_FILE.MISSING_KEY'));
 
     const signedUrl = getSignedUrl(key);
     return res.json({ signedUrl });
@@ -42,8 +47,9 @@ api.get('/sign', async (req, res) => {
 api.post('/delete', async (req, res) => {
   try {
     const { prefix, key } = req.body;
+    
     if (prefix === undefined && key === undefined)
-      return res.json(badRequest('FILE.DELETE.MISSING_KEY'));
+      return res.json(badRequest('FILE.DELETE_FILE.MISSING_KEY'));
 
     const status = Promise.all([deleteListByPrefix(prefix), deleteKey(key)]);
     return res.json({ status });

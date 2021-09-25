@@ -4,12 +4,17 @@ import { Users } from '../../../models/user';
 import { Sql } from '../../../database';
 import { Episodes } from "../../../models/episode";
 import { Likes } from "../../../models/like";
+import { Creators } from "../../../models/creator";
+import { removeEmptyValueObject } from '../../../utils/validate-utils';
 
 const { DataTypes } = require('sequelize');
 const uuidv1 = require('uuidv1');
 
-export const getAll = async ({ userId = null, page = 1, limit = 100 }) => {
-    const seriesData = await Series.findAll({ limit: limit });
+export const getAll = async ({ userId = null, page = 1, limit = 100, category = null, }) => {
+
+    const queryBy = removeEmptyValueObject({ limit, category })
+
+    const seriesData = await Series.findAll({ ...queryBy });
 
     let results = []
 
@@ -68,13 +73,12 @@ export const getById = async ({ userId = null, serieId }) => {
 };
 
 export const createSerie = async ({ cover, thumbnail, serieName, categoryId, description, userId }) => {
-    // const userQuery = await Users.findOne({ where: { _id: userId } });
 
-    // if (!userQuery) throw new Error('SERIE.USER_NOT_FOUND');
+    const creator = await Creators.findOne({ where: { _id: userId } });
 
-    // const user = { ...userQuery.dataValues };
+    if (!creator) throw new Error('SERIE.EDIT_SERIE.CREATOR_NOT_FOUND');
 
-    // if (user.role !== "creator") throw new Error('SERIE.USER_NOT_HAVE_PERMISSION');
+    if (!cover || !thumbnail || !serieName || !categoryId) throw new Error('SERIE.CREATE_SERIE.MISSING_FIELD');
 
     const result = await Series.create({
         serieId: uuidv1(),
@@ -88,14 +92,16 @@ export const createSerie = async ({ cover, thumbnail, serieName, categoryId, des
     return result;
 };
 
-export const editSerie = async ({ userId, cover, thumbnail, serieName, categoryId, description }) => {
-    const user = await Users.findOne({ where: { _id: userId } });
+export const editSerie = async ({ serieId, userId, cover, thumbnail, serieName, categoryId, description }) => {
+    const creator = await Creators.findOne({ where: { _id: userId } });
 
-    if (!user) throw new Error('USER.USER_NOT_FOUND');
+    if (!creator) throw new Error('SERIE.EDIT_SERIE.CREATOR_NOT_FOUND');
 
-    if (!fullName) throw new Error('USER.EDIT_USER.FULLNAME_CAN_EMPTY')
+    const serie = await Series.findOne({ where: { serieId } });
 
-    const result = await Users.update({ cover, thumbnail, serieName, categoryId, description }, { where: { _id: userId } })
+    if (!serie) throw new Error('SERIE.EDIT_SERIE.SERIE_NOT_FOUND');
+
+    const result = await Series.update({ cover, thumbnail, serieName, categoryId, description }, { where: { serieId } })
 
     return result;
 }

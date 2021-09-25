@@ -4,11 +4,18 @@ const {
 	MAIL_PASS,
 } = require('../../../environment');
 
+const mailer = require('nodemailer');
+
+const { Users } = require('../../../models/user');
+const { Creators } = require('../../../models/creator');
+
+import { resetPasswordTemplate } from './mail.template';
+
 const _generateURL = ({ type, activeCode, userId }) => {
 	if (type === 'reset-password')
-		return `${_getFrontendBaseURL()}/reset-password?code=${activeCode}&user=${userId}`;
+		return `${FRONTEND_BASE_URL}/reset-password?code=${activeCode}&user=${userId}`;
 	else if (type === 'verify-email')
-		return `${_getFrontendBaseURL()}/verify-email?code=${activeCode}&user=${userId}`;
+		return `${FRONTEND_BASE_URL}/verify-email?code=${activeCode}&user=${userId}`;
 	return ''
 };
 
@@ -31,7 +38,7 @@ const _configEmailTemplate = ({ to, href, type }) => {
 			};
 
 		default:
-			throw new Error('INVALID_ACTION_TYPE');
+			throw new Error('GMAIL.INVALID_ACTION_TYPE');
 	}
 };
 
@@ -56,8 +63,14 @@ export const sendEmail = async ({ activeCode, email, type }) => {
 		}
 	});
 
-	if (!user) {
-		throw new Error('USER.NOT_FOUND');
+	const creator = await Creators.findOne({
+		where: {
+			email,
+		}
+	})
+
+	if (!user && !creator) {
+		throw new Error('GMAIL.ACCOUNT_NOT_FOUND');
 	}
 
 	const href = _generateURL({ type, activeCode, userId: user._id });

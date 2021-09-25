@@ -12,7 +12,7 @@ const api = express.Router();
 
 api.get('/serie', skipGuestQuery(CheckAuth), async (req, res) => {
   try {
-    const { page, limit } = req.query;
+    const { page, limit, categoryId } = req.query;
     const userId = req.userInfo && req.userInfo._id ? req.userInfo._id : '';
     const results = await getAll({ userId, page, limit });
 
@@ -34,7 +34,7 @@ api.get('/serie/:serieId', skipGuestQuery(CheckAuth), async (req, res) => {
   }
 });
 
-api.post('/serie', async (req, res) => {
+api.post('/serie', CheckAuth, async (req, res) => {
   try {
     const userId = req.userInfo && req.userInfo._id ? req.userInfo._id : '';
     const { cover, thumbnail, serieName, categoryId, description } = req.body;
@@ -46,11 +46,14 @@ api.post('/serie', async (req, res) => {
   }
 });
 
-api.put('/serie/:serieId', async (req, res) => {
+api.put('/serie/:serieId', CheckAuth, async (req, res) => {
   try {
     const userId = req.userInfo && req.userInfo._id ? req.userInfo._id : '';
+    const { serieId } = req.params;
     const { cover, thumbnail, serieName, categoryId, description } = req.body;
-    const statusCode = await editSerie({ cover, thumbnail, serieName, categoryId, description, userId });
+    console.log(req.body)
+    console.log({ serieId, userId })
+    const statusCode = await editSerie({ serieId, cover, thumbnail, serieName, categoryId, description, userId });
     const result = statusCode > 0 ? 'success' : 'failed';
 
     return res.json(success(result));

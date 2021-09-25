@@ -17,6 +17,7 @@ const Series = Sql.define('series', {
     },
     description: {
         type: DataTypes.TEXT,
+        allowNull: true,
     },
     thumbnail: {
         type: DataTypes.STRING,

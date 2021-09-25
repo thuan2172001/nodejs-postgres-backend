@@ -118,11 +118,12 @@ api.put('/auth/password', CheckAuth, async (req, res) => {
 
     throw new Error('AUTH.ERROR.USER_NOT_FOUND');
   } catch (err) {
-    return res.json(serverError('AUTH.ERROR.CHANGE_PASSWORD.FAILED'));
+    error(`${req.method} ${req.originalUrl}`, err.message);
+    return res.json(serverError(err.message));
   }
 })
 
-api.post('/auth/forgot-password', CheckAuth, async (req, res) => {
+api.post('/auth/forgot-password', async (req, res) => {
   try {
     const { email } = req.body;
     const user = await Users.findOne({
@@ -137,9 +138,10 @@ api.post('/auth/forgot-password', CheckAuth, async (req, res) => {
       type: 'reset-password',
     })
 
-    return res.json(success({ results }));
+    return res.json(success({ status }));
   } catch (err) {
-    return res.json(serverError('AUTH.ERROR.CHANGE_PASSWORD.FAILED'));
+    error(`${req.method} ${req.originalUrl}`, err.message);
+    return res.json(serverError(err.message));
   }
 })
 
