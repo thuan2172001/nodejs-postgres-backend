@@ -35,7 +35,7 @@ export const verifyCode = async ({ codeId, userId }) => {
 
     const code = await Codes.findOne({ where: { codeId, userId } })
 
-    if (!code) throw new Error('CODE.VERIFY_CODE.CODE_NOT_EXISTED')
+    if (!code) return false;
 
     const deleteStatus = await Codes.destroy({
         where: { codeId, userId }

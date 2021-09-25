@@ -153,7 +153,9 @@ api.put('/auth/reset-password', async (req, res) => {
   try {
     const { codeId, userId, publicKey, encryptedPrivateKey } = req.body;
 
-    const verifyStatus = verifyCode({ codeId, userId })
+    const verifyStatus = await verifyCode({ codeId, userId })
+
+    console.log({ verifyCode })
 
     if (!verifyStatus) throw new Error('AUTH.ERROR.RESET_PASSWORD.FAILED')
 
