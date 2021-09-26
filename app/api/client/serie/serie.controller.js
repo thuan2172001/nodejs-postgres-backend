@@ -64,8 +64,7 @@ api.put('/serie/:serieId', CheckAuth, async (req, res) => {
     const userId = req.userInfo && req.userInfo._id ? req.userInfo._id : '';
     const { serieId } = req.params;
     const { cover, thumbnail, serieName, categoryId, description } = req.body;
-    const statusCode = await editSerie({ serieId, cover, thumbnail, serieName, categoryId, description, userId });
-    const result = statusCode > 0 ? 'success' : 'failed';
+    const result = await editSerie({ serieId, cover, thumbnail, serieName, categoryId, description, userId });
 
     return res.json(success(result));
   } catch (err) {

@@ -31,7 +31,7 @@ const Episodes = Sql.define('episodes', {
         type: DataTypes.STRING,
     },
     price: {
-        type: DataTypes.STRING,
+        type: DataTypes.FLOAT,
     },
     likeInit: {
         type: DataTypes.INTEGER,

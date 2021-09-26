@@ -1,7 +1,7 @@
 
 const { STRIPE_TOKEN, STRIPE_API_KEY } = require('../../../environment');
 const axios = require('axios');
-const Stripe = require('stripe');
+const stripe = require('stripe');
 const qs = require('qs');
 const User = require('../../../models/user');
 

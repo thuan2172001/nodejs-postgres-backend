@@ -82,3 +82,85 @@ export const getFavorEpisodes = async ({ userId }) => {
 
     return favoriteList;
 };
+
+export const createEpisode = async ({
+    creatorId,
+    name,
+    chapter,
+    key,
+    pageNumber,
+    description,
+    serieId,
+    thumbnail,
+    price,
+}) => {
+    const creator = await Creators.findOne({ where: { _id: creatorId } })
+
+    if (!creator) throw new Error('EPISODE.CREATE_EPISODE.CREATOR_NOT_FOUND')
+
+    const serie = await Series.findOne({ where: { serieId } })
+
+    if (!serie) throw new Error('EPISODE.CREATE_EPISODE.SERIE_NOT_FOUND')
+
+    const episodeId = uuidv1();
+
+    const episode = await Episodes.create({
+        episodeId,
+        name,
+        chapter,
+        key,
+        pageNumber,
+        description,
+        serieId,
+        thumbnail,
+        price,
+        likeInit: 1000,
+        isPublished: false,
+    })
+
+    if (!episode) throw new Error('EPISODE.CREATE_EPISODE.FAILED')
+
+    const episodeResult = await Episodes.findOne({ where: { episodeId } })
+
+    if (!episodeResult) throw new Error('EPISODE.CREATE_EPISODE.FAILED')
+
+    return episodeResult?.dataValues;
+}
+
+export const editEpisode = async ({
+    creatorId,
+    episodeId,
+    name,
+    chapter,
+    key,
+    pageNumber,
+    description,
+    thumbnail,
+    price,
+}) => {
+    const creator = await Creators.findOne({ where: { _id: creatorId } })
+
+    if (!creator) throw new Error('EPISODE.EDIT_EPISODE.CREATOR_NOT_FOUND')
+
+    const episode = Episodes.findOne({ where: { episodeId } })
+
+    if (!episode) throw new Error('EPISODE.EDIT_EPISODE.EPISODE_NOT_FOUND')
+
+    const editStatus = await Episodes.update({
+        name,
+        chapter,
+        key,
+        pageNumber,
+        description,
+        thumbnail,
+        price,
+    }, { where: { episodeId } })
+
+    if (!editStatus) throw new Error('EPISODE.EDIT_EPISODE.FAILED')
+
+    const newEpisode = await Episodes.findOne({ where: { episodeId } })
+
+    if (!newEpisode) throw new Error('EPISODE.EDIT_EPISODE.FAILED')
+
+    return newEpisode?.dataValues;
+}

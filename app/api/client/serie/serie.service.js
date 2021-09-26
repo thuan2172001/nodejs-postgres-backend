@@ -105,7 +105,11 @@ export const editSerie = async ({ serieId, userId, cover, thumbnail, serieName, 
 
     const result = await Series.update({ cover, thumbnail, serieName, categoryId, description }, { where: { serieId } })
 
-    return result;
+    const newSerie = await Series.findOne({ where: { serieId } });
+
+    if (!newSerie) throw new Error('SERIE.EDIT_SERIE.FAILED');
+
+    return newSerie.dataValues;
 }
 
 export const editSerieStatus = async ({ serieId, userId, type }) => {

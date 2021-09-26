@@ -4,7 +4,7 @@ import CommonError from '../../library/error';
 import {
     success,
 } from '../../../utils/response-utils';
-import { getById, editEpisodeStatus, getFavorEpisodes } from "./episode.service";
+import { getById, editEpisodeStatus, getFavorEpisodes, createEpisode, editEpisode } from "./episode.service";
 
 const api = express.Router();
 
@@ -40,6 +40,53 @@ api.get('/episode/:episodeId', skipGuestQuery(CheckAuth), async (req, res) => {
 
         return res.json(success(results));
     } catch (err) {
+        return CommonError(req, err, res);
+    }
+});
+
+api.post('/episode', CheckAuth, async (req, res) => {
+    try {
+        const creatorId = req.userInfo && req.userInfo._id ? req.userInfo._id : '';
+        const { name, chapter, key, pageNumber, description, serieId, thumbnail, price } = req.body;
+        const result = await createEpisode({
+            creatorId,
+            name,
+            chapter,
+            key,
+            pageNumber,
+            description,
+            serieId,
+            thumbnail,
+            price,
+        })
+        return res.json(success(result));
+    } catch (err) {
+        log.error(err.message)
+        console.log(err.stack)
+        return CommonError(req, err, res);
+    }
+});
+
+api.put('/episode/:episodeId', CheckAuth, async (req, res) => {
+    try {
+        const creatorId = req.userInfo && req.userInfo._id ? req.userInfo._id : '';
+        const { episodeId } = req.params;
+        const { name, chapter, key, pageNumber, description, thumbnail, price } = req.body;
+        const result = await editEpisode({
+            creatorId,
+            episodeId,
+            name,
+            chapter,
+            key,
+            pageNumber,
+            description,
+            thumbnail,
+            price,
+        })
+        return res.json(success(result));
+    } catch (err) {
+        log.error(err.message)
+        console.log(err.stack)
         return CommonError(req, err, res);
     }
 });
