@@ -39,4 +39,4 @@ yarn-error.log*
 
 uploads/
 yarn.lock
-.env.production
+.env.*
