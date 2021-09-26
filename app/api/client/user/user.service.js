@@ -100,22 +100,38 @@ export const getBookshelf = async ({ userId }) => {
     return episodesId;
 }
 
-export const updateBookshelf = async ({ userId, bookshelfItems }) => {
+export const updateBookshelf = async ({ userId, episodeId }) => {
     const user = await Users.findOne({ where: { _id: userId } });
 
     if (!user) throw new Error('USER.USER_NOT_FOUND');
+
+    const episode = await Episodes.findOne({ where: { episodeId } })
+
+    if (!episode) throw new Error('ADD_TO_BOOKSHELF.EPISODE_NOT_FOUND')
+
+    const isFree = episode?.dataValues?.price <= 0;
+
+    if (!isFree) throw new Error('ADD_TO_BOOKSHELF.EPISODE_NOT_FREE')
 
     const bookshelf = await Bookshelves.findOne({ where: { userId } });
 
     if (!bookshelf) {
         const newBookshelf = await Bookshelves.create({
             userId,
-            bookshelfItems,
+            bookshelfItems: [episodeId],
         })
         return newBookshelf;
     }
 
-    const result = await Bookshelves.update({ bookshelfItems: bookshelfItems }, { where: { userId: userId } })
+    const bookshelfItems = bookshelf?.dataValues?.bookshelfItems || [];
+
+    const alreadyExisted = bookshelfItems.includes(episodeId)
+
+    if (alreadyExisted) return true;
+
+    const newBookshelfItems = bookshelfItems.length > 0 ? [...bookshelfItems, episodeId] : [episodeId];
+
+    const result = await Bookshelves.update({ bookshelfItems: newBookshelfItems }, { where: { userId: userId } })
 
     return result;
 }
@@ -140,8 +156,6 @@ export const createUser = async ({ username, email, fullName, publicKey, encrypt
     }
 
     const checkUsername = await Users.findOne({ where: { username } });
-
-    console.log({ checkUsername })
 
     if (checkUsername) throw new Error('USER.CREATE_USER.EXISTED_USERNAME')
 

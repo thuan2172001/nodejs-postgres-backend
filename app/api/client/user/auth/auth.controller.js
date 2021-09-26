@@ -15,7 +15,6 @@ const { error } = require('../../../../services/logger');
 api.post('/auth/credential', async (req, res) => {
   try {
     const { username } = req.body;
-    console.log({ username });
     if (!username) {
       throw new Error('AUTH.ERROR.INVALID_REQUEST');
     } else {
@@ -154,8 +153,6 @@ api.put('/auth/reset-password', async (req, res) => {
     const { codeId, userId, publicKey, encryptedPrivateKey } = req.body;
 
     const verifyStatus = await verifyCode({ codeId, userId })
-
-    console.log({ verifyCode })
 
     if (!verifyStatus) throw new Error('AUTH.ERROR.RESET_PASSWORD.FAILED')
 

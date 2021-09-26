@@ -71,7 +71,6 @@ export const CheckAuth = (req, res, next) => {
 			return;
 		}
 		findUserByUsername(authInfo.certificateInfo.username).then((userInfo) => {
-			console.log({ userInfo })
 			if (!userInfo) {
 				if (ByPassAuth(req, res, next)) return;
 

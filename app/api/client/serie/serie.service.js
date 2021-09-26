@@ -12,11 +12,7 @@ const uuidv1 = require('uuidv1');
 
 export const getAll = async ({ userId = null, page = 1, limit = 100, categoryId = null, }) => {
 
-    const queryBy = removeEmptyValueObject({ categoryId })
-
-    console.log({ queryBy })
-
-    const seriesData = await Series.findAll({ where: { ...queryBy }, limit: limit });
+    const seriesData = categoryId ? await Series.findAll({ where: { categoryId }, limit: limit }) : await Series.findAll({ limit });
 
     let results = []
 

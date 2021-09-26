@@ -77,8 +77,8 @@ api.get('/user/bookshelf', CheckAuth, async (req, res) => {
 api.put('/user/bookshelf', CheckAuth, async (req, res) => {
     try {
         const userId = req.userInfo && req.userInfo._id ? req.userInfo._id : '';
-        const { bookshelfItems } = req.body
-        const statusCode = await updateBookshelf({ userId, bookshelfItems });
+        const { episodeId } = req.body
+        const statusCode = await updateBookshelf({ userId, episodeId });
 
         const result = statusCode > 0 ? 'success' : 'failed';
 
