@@ -61,7 +61,7 @@ api.post('/episode', CheckAuth, async (req, res) => {
         })
         return res.json(success(result));
     } catch (err) {
-        log.error(err.message)
+        console.log(err.message)
         console.log(err.stack)
         return CommonError(req, err, res);
     }
@@ -85,7 +85,7 @@ api.put('/episode/:episodeId', CheckAuth, async (req, res) => {
         })
         return res.json(success(result));
     } catch (err) {
-        log.error(err.message)
+        console.log(err.message)
         console.log(err.stack)
         return CommonError(req, err, res);
     }

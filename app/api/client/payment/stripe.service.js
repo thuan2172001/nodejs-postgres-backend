@@ -1,9 +1,11 @@
 
 const { STRIPE_TOKEN, STRIPE_API_KEY } = require('../../../environment');
 const axios = require('axios');
-const stripe = require('stripe');
+const Stripe = require('stripe');
 const qs = require('qs');
-const User = require('../../../models/user');
+const { Users } = require('../../../models/user');
+
+const stripe = Stripe(STRIPE_API_KEY);
 
 export const getCustomerPaymentMethod = async ({ customerID }) => {
     const paymentMethods = await stripe.paymentMethods.list({
@@ -61,4 +63,30 @@ export const deduplicatePaymentMethods = async ({
             fingerprints.push(method[type].fingerprint);
         }
     }
+};
+
+export const setupPaymentIntent = async ({ userInfo }) => {
+    if (userInfo.role !== 'user') {
+        throw new Error('STRIPE.SETUP_PAYMENT.NOT_USER_ROLE');
+    }
+
+    const user = await Users.findOne({ where: { _id: userInfo._id } });
+
+    if (!user) {
+        throw new Error('STRIPE.SETUP_PAYMENT.USER.NOT_FOUND');
+    }
+
+    const { stripeAccount } = user;
+
+    if (!stripeAccount) {
+        throw new Error('STRIPE.SETUP.PAYMENT_INVALID');
+    }
+
+    console.log({ stripeAccount })
+
+    return stripe.setupIntents.create({
+        payment_method_types: ['card'],
+        customer: stripeAccount,
+        usage: 'on_session',
+    });
 };

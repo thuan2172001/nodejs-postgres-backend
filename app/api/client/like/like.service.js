@@ -21,10 +21,6 @@ export const likeToggle = async ({ userId, episodeId = null, serieId = null, sta
 
     let result = false;
 
-    console.log('debug')
-
-    console.log({ userId, serieId, episodeId })
-
     const foundItem = await Likes.findOne({ where: { userId, serieId, episodeId } })
 
     if (status == 'LIKE') {
@@ -36,9 +32,7 @@ export const likeToggle = async ({ userId, episodeId = null, serieId = null, sta
         })
     } else {
         if (!foundItem) throw new Error('LIKE.UNLIKE_BUT_NOT_FOUND');
-        console.log({ foundItem })
         result = await Likes.destroy({ where: { id: foundItem.dataValues.id } })
-        console.log({ result })
     }
 
     return true;

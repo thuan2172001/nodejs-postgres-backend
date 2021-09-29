@@ -13,8 +13,19 @@ import {
     getBookshelf,
     updateBookshelf
 } from "./user.service";
+import { STRIPE_PUBLIC_KEY } from '../../../environment';
 
 const api = express.Router();
+
+api.get('/user/api-key', async (req, res) => {
+    try {
+        const apiKey = STRIPE_PUBLIC_KEY || null;
+        return res.json(success({ apiKey })
+        );
+    } catch (err) {
+        return CommonError(req, err, res);
+    }
+});
 
 api.get('/user/cart-data', CheckAuth, async (req, res) => {
     try {

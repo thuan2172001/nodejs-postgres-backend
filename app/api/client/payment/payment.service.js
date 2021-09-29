@@ -7,6 +7,9 @@ const {
   // detachPaymentMethod,
   // checkout,
 } = require('./stripe.service');
+const { Users } = require('../../../models/user')
+const { Bookshelves } = require('../../../models/bookshelf')
+const { Carts } = require('../../../models/cart')
 
 const { hookPromise } = require('../../library/customPromise');
 const { isValidString } = require('../../../utils/validate-utils');
@@ -54,7 +57,7 @@ export const addPayment = async ({
   if (
     paymentMethodsFingerprint.length !== new Set(paymentMethodsFingerprint).size
   ) {
-    await deduplicatePaymentMethods({ customerID: customer.stripeAccount });
+    await deduplicatePaymentMethods({ customerID: user.stripeAccount });
 
     throw new Error('PAYMENT.CARD_EXISTED');
   }
@@ -110,4 +113,43 @@ export const getAllPaymentMethods = async ({ userId }) => {
   return getCustomerPaymentMethod({
     customerID: stripeAccount,
   });
+}
+
+export const checkoutOrder = async ({
+  cartList, payment, currency, userInfo
+}) => {
+  if (!userInfo) throw new Error('PAYMENT.CHECKOUT.NOT_AN_USER')
+
+  const user = await Users.findOne({ where: { _id: userInfo._id } })
+
+  if (!user) throw new Error('PAYMENT.CHECKOUT.USER_NOT_FOUND')
+
+  const bookshelf = await Bookshelves.findOne({ where: { userId: user._id } })
+
+  const bookshelfItems = bookshelf ? bookshelf.dataValues?.bookshelfItems : []
+
+  console.log({ cartList, bookshelfItems })
+
+  const newBookshelfItems = [...new Set([...bookshelfItems, ...cartList])]
+
+  const result = await bookshelf.update(
+    { bookshelfItems: newBookshelfItems },
+    { where: { userId: user._id } },
+  )
+
+  const cart = await Carts.findOne({ where: { userId: user._id } })
+
+  const cartItems = cart ? cart.dataValues?.cartItems : []
+
+  const newCartItems = cartItems.filter(ele => {
+    return cartList.indexOf(ele) < 0;
+  })
+
+  const updateCartStatus = await cart.update(
+    { cartItems: newCartItems },
+    { where: { userId: user._id } },
+  )
+
+  console.log({ updateCartStatus })
+  return result;
 }

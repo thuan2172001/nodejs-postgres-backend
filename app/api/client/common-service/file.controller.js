@@ -39,7 +39,7 @@ api.get('/sign', async (req, res) => {
     const signedUrl = getSignedUrl(key);
     return res.json({ signedUrl });
   } catch (err) {
-    log.error(err.message);
+    console.log(err.message);
     return CommonError(req, err, res);
   }
 });
@@ -54,7 +54,7 @@ api.post('/delete', async (req, res) => {
     const status = Promise.all([deleteListByPrefix(prefix), deleteKey(key)]);
     return res.json({ status });
   } catch (err) {
-    log.error(err.message);
+    console.log(err.message);
     return CommonError(req, err, res);
   }
 });
@@ -65,7 +65,7 @@ api.get('/list', async (req, res) => {
     const result = await getListByPrefix(prefix);
     res.json({ result });
   } catch (err) {
-    log.error(err.message);
+    console.log(err.message);
     return CommonError(req, err, res);
   }
 });
