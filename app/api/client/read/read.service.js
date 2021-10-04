@@ -33,7 +33,6 @@ export const getSignedUrl = async ({ episodeId, userId, fromPage = 1, endPage = 
   let signedUrl = [];
 
   if (!isLocked) {
-    console.log({ fromPage, endPage })
     for (let i = fromPage; i <= endPage; i++) {
       signedUrl.push(S3.getSignedUrl(`${episode.key}/${i}.png`))
     }
@@ -53,30 +52,20 @@ export const getSerie = async ({ userId, serieId }) => {
 
   if (!serie) return null;
 
-  console.log({ userId })
-
   const episodeList = await Episodes.findAll({ where: { serieId } })
 
   const bookshelf = await Bookshelves.findOne({ where: { userId } });
 
-  console.log({ bookshelf })
-
   const bookshelfItems = bookshelf ? bookshelf.dataValues?.bookshelfItems : [];
-
-  console.log({ bookshelfItems })
 
   const episodesData = await Promise.all(
     episodeList.map(
       async ({ chapter, name, episodeId, price, isPublished }) => {
         const inBookShelf = bookshelfItems.includes(episodeId) ? true : false
 
-        console.log({ inBookShelf, isPublished })
-
         const shouldShow = isPublished || inBookShelf;
 
         const isLocked = price && !inBookShelf;
-
-        // console.log({ chapter, name, episodeId, price, isPublished, inBookShelf, isLocked, shouldShow })
 
         if (!shouldShow) return null;
 

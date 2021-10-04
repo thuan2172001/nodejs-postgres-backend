@@ -6,13 +6,14 @@ import { Episodes } from "../../../models/episode";
 import { Likes } from "../../../models/like";
 import { Creators } from "../../../models/creator";
 import { removeEmptyValueObject } from '../../../utils/validate-utils';
+import { getPagination } from '../../../utils/pagination';
 
 const { DataTypes } = require('sequelize');
 const uuidv1 = require('uuidv1');
 
-export const getAll = async ({ userId = null, page = 1, limit = 100, categoryId = null, }) => {
+export const getAllByUser = async ({ userId = null, page = 1, limit = 100, categoryId = null }) => {
 
-    const seriesData = categoryId ? await Series.findAll({ where: { categoryId }, limit: limit }) : await Series.findAll({ limit });
+    const seriesData = categoryId ? await Series.findAll({ where: { categoryId, isPublished: true }, limit: limit }) : await Series.findAll({ where: { isPublished: true }, limit });
 
     let results = []
 
@@ -24,9 +25,33 @@ export const getAll = async ({ userId = null, page = 1, limit = 100, categoryId 
         results.push(serieFinalData);
     }))
 
-    console.log({ results })
-
     return results;
+};
+
+export const getAllByCreator = async ({ userId = null, page = 1, limit = 100, isPublished = null }) => {
+
+    const creator = await Creators.findOne({ where: { _id: userId } })
+
+    if (!creator) throw new Error('SERIE.GET_ALL.CREATOR_NOT_FOUND')
+
+    const publishedSeries = await Series.findAll({ where: { isPublished: true } });
+    const unpublishedSeries = await Series.findAll({ where: { isPublished: false } });
+
+    console.log({ isPublished })
+
+    const seriesData = isPublished !== null ? isPublished == 'false' ? unpublishedSeries : publishedSeries : { ...unpublishedSeries, ...publishedSeries }
+
+    console.log({ seriesData })
+    let results = []
+
+    await Promise.all(seriesData.map(async (_serieData) => {
+        const serieData = _serieData?.dataValues;
+        const episodes = await Episodes.findAll({ where: { serieId: serieData.serieId } }) || [];
+        const serieFinalData = { ...serieData, episodes: episodes.length }
+        results.push(serieFinalData);
+    }))
+
+    return { data: getPagination({ array: results, page, limit }), publishedSeriesTotal: publishedSeries.length, unpublishedSeries: unpublishedSeries.length };
 };
 
 export const getById = async ({ userId = null, serieId }) => {
