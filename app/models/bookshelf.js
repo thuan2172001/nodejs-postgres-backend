@@ -5,7 +5,7 @@ const { DataTypes } = require('sequelize');
 
 const Bookshelves = Sql.define('bookshelves', {
     userId: {
-        type: DataTypes.STRING,
+        type: DataTypes.UUID,
         allowNull: false,
         primaryKey: true,
     },

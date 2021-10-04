@@ -24,6 +24,8 @@ export const getAll = async ({ userId = null, page = 1, limit = 100, categoryId 
         results.push(serieFinalData);
     }))
 
+    console.log({ results })
+
     return results;
 };
 

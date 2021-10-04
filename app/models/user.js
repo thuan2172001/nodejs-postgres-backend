@@ -42,6 +42,10 @@ const Users = Sql.define('users', {
     },
     isBanned: {
         type: DataTypes.BOOLEAN,
+    },
+    settingRead: {
+        type: DataTypes.STRING,
+        default: '{"animation":"none","speed":"fast","area":35}'
     }
 }, {
     // disable the modification of table names; By default, sequelize will automatically

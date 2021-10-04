@@ -128,14 +128,24 @@ export const checkoutOrder = async ({
 
   const bookshelfItems = bookshelf ? bookshelf.dataValues?.bookshelfItems : []
 
-  console.log({ cartList, bookshelfItems })
-
   const newBookshelfItems = [...new Set([...bookshelfItems, ...cartList])]
 
-  const result = await bookshelf.update(
-    { bookshelfItems: newBookshelfItems },
-    { where: { userId: user._id } },
-  )
+  let result;
+
+  if (!bookshelf) {
+    const newBookshelf = await Bookshelves.create({
+      userId: user._id,
+      bookshelfItems: newBookshelfItems,
+    })
+    newBookshelf ? result = [1] : [0];
+  } else {
+    result = await Bookshelves.update(
+      { bookshelfItems: newBookshelfItems },
+      { where: { userId: user._id } },
+    )
+  }
+
+  if (result.length < 0 || result[0] === 0) return null;
 
   const cart = await Carts.findOne({ where: { userId: user._id } })
 
@@ -145,7 +155,7 @@ export const checkoutOrder = async ({
     return cartList.indexOf(ele) < 0;
   })
 
-  const updateCartStatus = await cart.update(
+  const updateCartStatus = await Carts.update(
     { cartItems: newCartItems },
     { where: { userId: user._id } },
   )

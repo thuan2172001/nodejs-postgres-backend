@@ -8,7 +8,8 @@ faker.locale = 'vi';
 
 export const generateBookshelf = async () => {
     try {
-        const dataFile = await getCSVFiles('bookshelves');
+        // const dataFile = await getCSVFiles('bookshelves');
+        const dataFile = await getCSVFiles('users');
 
         const { header, content } = await getContentCSVFiles(dataFile[0], ';');
 
@@ -17,12 +18,15 @@ export const generateBookshelf = async () => {
         await Promise.each(content, async (line) => {
             const field = cleanField(line.split(';'));
 
-            const itemsData = field[header.indexOf('bookshelfItems')];
+            // const itemsData = field[header.indexOf('bookshelfItems')];
+            const userId = field[header.indexOf('_id')];
 
-            const items = itemsData.slice(1, itemsData.length - 1).split(',');
+            // const items = itemsData.slice(1, itemsData.length - 1).split(',');
+            const items = [];
 
             const item = {
-                userId: field[header.indexOf('userId')],
+                // userId: field[header.indexOf('userId')],
+                userId,
                 bookshelfItems: items,
             };
             dataSeed.push(item);

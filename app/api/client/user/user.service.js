@@ -1,4 +1,5 @@
 import { Users } from "../../../models/user";
+import { Likes } from "../../../models/like";
 import { Carts } from "../../../models/cart";
 import { Episodes } from "../../../models/episode";
 import { Bookshelves } from "../../../models/bookshelf";
@@ -24,7 +25,7 @@ export const getCartData = async ({ userId }) => {
 
     await Promise.all(episodesId.map(async (episodeId) => {
         const episodeData = await Episodes.findOne({ where: { episodeId } })
-        result.push(episodeData.dataValues)
+        episodeData && result.push(episodeData.dataValues)
     }))
 
     return result;
@@ -79,8 +80,17 @@ export const getBookshelfData = async ({ userId }) => {
     let result = [];
 
     await Promise.all(episodesId.map(async (episodeId) => {
-        const episodeData = await Episodes.findOne({ where: { episodeId } })
-        result.push(episodeData.dataValues)
+        if (episodeId) {
+            const episodeData = await Episodes.findOne({ where: { episodeId } })
+            const likes = await Likes.findAll({ where: { episodeId } })
+            const alreadyLiked = await Likes.findOne({ where: { episodeId, userId } })
+            const episodeDataValue = episodeData.dataValues;
+            result.push({
+                ...episodeDataValue,
+                totalLikes: episodeData.likeInit + likes.length,
+                alreadyLiked: alreadyLiked !== null,
+            })
+        }
     }))
 
     return result;
@@ -97,7 +107,9 @@ export const getBookshelf = async ({ userId }) => {
 
     const episodesId = bookshelf.dataValues?.bookshelfItems || [];
 
-    return episodesId;
+    const epiosodeIdList = episodesId.filter(e => e !== null)
+
+    return epiosodeIdList;
 }
 
 export const updateBookshelf = async ({ userId, episodeId }) => {
@@ -185,6 +197,14 @@ export const createUser = async ({ username, email, fullName, publicKey, encrypt
         ...item,
         stripeAccount: stripeAccount.id
     })
+
+    if (result) {
+        const createBookshelf = await Bookshelves.create({
+            userId: item._id,
+            bookshelfItems: [],
+        })
+        console.log({ createBookshelf })
+    }
 
     return result;
 }
