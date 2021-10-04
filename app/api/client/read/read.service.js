@@ -6,6 +6,7 @@ import { Bookshelves } from "../../../models/bookshelf";
 import { Creators } from "../../../models/creator";
 import { Users } from "../../../models/user";
 import S3 from '../../../services/s3/s3';
+import { getById } from "../episode/episode.service";
 
 export const getSignedUrl = async ({ episodeId, userId, fromPage = 1, endPage = 1 }) => {
   const episode = await Episodes.findOne({ where: { episodeId } })
@@ -23,8 +24,6 @@ export const getSignedUrl = async ({ episodeId, userId, fromPage = 1, endPage = 
   const serie = await Series.findOne({ where: { serieId } })
 
   if (!serie) throw new Error('READ.SERIE_NOT_FOUND')
-
-  const serieData = serie.dataValues;
 
   const episodePrice = episodeData?.price || 0;
 
@@ -58,6 +57,10 @@ export const getSerie = async ({ userId, serieId }) => {
 
   const bookshelfItems = bookshelf ? bookshelf.dataValues?.bookshelfItems : [];
 
+  const likes = await Likes.findAll({ where: { serieId } }) || [];
+
+  const alreadyLiked = await Likes.findOne({ where: { userId, serieId } }) || null;
+
   const episodesData = await Promise.all(
     episodeList.map(
       async ({ chapter, name, episodeId, price, isPublished }) => {
@@ -74,6 +77,8 @@ export const getSerie = async ({ userId, serieId }) => {
           name,
           isLocked,
           episodeId,
+          likes: 1000 + likes.length,
+          alreadyLiked: alreadyLiked !== null,
         };
       }
     )
