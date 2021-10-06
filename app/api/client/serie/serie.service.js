@@ -12,8 +12,9 @@ const { DataTypes } = require('sequelize');
 const uuidv1 = require('uuidv1');
 
 export const getAllByUser = async ({ userId = null, page = 1, limit = 100, categoryId = null }) => {
+    console.log({ userId, page, categoryId })
 
-    const seriesData = categoryId ? await Series.findAll({ where: { categoryId, isPublished: true }, limit: limit }) : await Series.findAll({ where: { isPublished: true }, limit });
+    const seriesData = !categoryId ? await Series.findAll({ where: { isPublished: true }, limit }) : await Series.findAll({ where: { categoryId, isPublished: true }, limit: limit });
 
     let results = []
 
@@ -29,6 +30,7 @@ export const getAllByUser = async ({ userId = null, page = 1, limit = 100, categ
 };
 
 export const getAllByCreator = async ({ userId = null, page = 1, limit = 100, isPublished = null }) => {
+    console.log({ userId, page, limit, isPublished })
 
     const creator = await Creators.findOne({ where: { _id: userId } })
 

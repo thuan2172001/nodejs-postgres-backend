@@ -2,6 +2,7 @@ import { Users } from "../../../models/user";
 import { Likes } from "../../../models/like";
 import { Carts } from "../../../models/cart";
 import { Episodes } from "../../../models/episode";
+import { Series } from "../../../models/serie";
 import { Bookshelves } from "../../../models/bookshelf";
 import { Creators } from "../../../models/creator";
 import { createStripeAccount } from "../payment/stripe.service";
@@ -92,6 +93,49 @@ export const getBookshelfData = async ({ userId }) => {
             })
         }
     }))
+
+    return result;
+}
+
+export const getFavoriteEpisodes = async ({ userId, type = 'EPISODE' }) => {
+    const user = await Users.findOne({ where: { _id: userId } });
+
+    if (!user) throw new Error('USER.USER_NOT_FOUND');
+
+    let result = [];
+
+    if (type === 'EPISODE') {
+
+        const likes = await Likes.findAll({ where: { userId, serieId: null } }) || [];
+
+        await Promise.all(likes.map(async (like) => {
+            const episodeId = like.episodeId;
+            const episodeData = await Episodes.findOne({ where: { episodeId } })
+            const likes = await Likes.findAll({ where: { episodeId } })
+            const episodeDataValue = episodeData.dataValues;
+            result.push({
+                ...episodeDataValue,
+                totalLikes: episodeData.likeInit + likes.length,
+                alreadyLiked: true,
+            })
+        }))
+    } else if (type == 'SERIES') {
+        const likes = await Likes.findAll({ where: { userId, episodeId: null } }) || [];
+
+        await Promise.all(likes.map(async (like) => {
+            const serieId = like.serieId;
+            const serieData = await Series.findOne({ where: { serieId } })
+            const likes = await Likes.findAll({ where: { serieId } })
+            const serieDataValue = serieData.dataValues;
+            result.push({
+                ...serieDataValue,
+                totalLikes: 1000 + likes.length,
+                alreadyLiked: true,
+            })
+        }))
+    } else {
+        throw new Error('USER.GET_FAVORITE.INVALID_TYPE')
+    }
 
     return result;
 }

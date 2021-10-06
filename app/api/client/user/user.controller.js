@@ -11,7 +11,8 @@ import {
     editUserStatus,
     getBookshelfData,
     getBookshelf,
-    updateBookshelf
+    updateBookshelf,
+    getFavoriteEpisodes
 } from "./user.service";
 import { STRIPE_PUBLIC_KEY } from '../../../environment';
 
@@ -42,6 +43,19 @@ api.get('/user/cart', CheckAuth, async (req, res) => {
     try {
         const userId = req.userInfo && req.userInfo._id ? req.userInfo._id : '';
         const results = await getCart({ userId });
+
+        return res.json(success(results));
+    } catch (err) {
+        return CommonError(req, err, res);
+    }
+});
+
+api.get('/user/favor-data', CheckAuth, async (req, res) => {
+    try {
+        const userId = req.userInfo && req.userInfo._id ? req.userInfo._id : '';
+        const { type } = req.query;
+        console.log({ type })
+        const results = await getFavoriteEpisodes({ userId, type });
 
         return res.json(success(results));
     } catch (err) {
