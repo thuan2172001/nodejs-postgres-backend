@@ -11,6 +11,8 @@ import { getPagination } from '../../../utils/pagination';
 const { DataTypes } = require('sequelize');
 const uuidv1 = require('uuidv1');
 
+
+// missing pagination
 export const getAllByUser = async ({ userId = null, page = 1, limit = 100, categoryId = null }) => {
     console.log({ userId, page, categoryId })
 
@@ -56,7 +58,7 @@ export const getAllByCreator = async ({ userId = null, page = 1, limit = 100, is
     return { data: getPagination({ array: results, page, limit }), publishedSeriesTotal: publishedSeries.length, unpublishedSeries: unpublishedSeries.length };
 };
 
-export const getById = async ({ userId = null, serieId }) => {
+export const getById = async ({ userId = null, serieId, page = 1, limit = 100 }) => {
     const serie = await Series.findOne({ where: { serieId: serieId } });
 
     if (!serie) throw new Error('SERIE.SERIE_NOT_FOUND');
@@ -91,12 +93,44 @@ export const getById = async ({ userId = null, serieId }) => {
     const result = {
         ...serie.dataValues,
         category: category,
-        episodes,
+        episodes: getPagination({ array: episodes, page, limit }),
         likes: likes.length ? (likes.length + 1000) : 1000,
         alreadyLiked: isLike !== null
     };
 
     return result;
+};
+
+export const getByIdAndStatus = async ({ creatorId = null, serieId, isPublished, page = 1, limit = 100 }) => {
+    const creator = await Creators.findOne({ where: { _id: creatorId } })
+
+    if (!creator) throw new Error('SERIE.CREATOR_NOT_FOUND');
+
+    const serie = await Series.findOne({ where: { serieId: serieId } });
+
+    if (!serie) throw new Error('SERIE.SERIE_NOT_FOUND');
+
+    const categoryId = serie.categoryId;
+
+    const category = await Categories.findOne({ where: { categoryId } });
+
+    if (!category) throw new Error('SERIE.CATEGORY_NOT_FOUND');
+
+    const publishedEpisodesData = await Episodes.findAll({ where: { serieId: serieId, isPublished: true } });
+
+    const privateEpisodesData = await Episodes.findAll({ where: { serieId: serieId, isPublished: false } });
+
+    const likes = await Likes.findAll({ where: { serieId } })
+
+    return {
+        ...serie.dataValues,
+        category: category,
+        episodes: getPagination({ array: isPublished ? publishedEpisodesData : privateEpisodesData, page, limit }),
+        likes: likes.length ? (likes.length + 1000) : 1000,
+        publishedEpisodesTotal: publishedEpisodesData.length,
+        privateEpisodesTotal: privateEpisodesData.length,
+        totalEpisodes: publishedEpisodesData.length + privateEpisodesData.length,
+    }
 };
 
 export const createSerie = async ({ cover, thumbnail, serieName, categoryId, description, userId }) => {

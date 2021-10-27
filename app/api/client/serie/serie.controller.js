@@ -5,7 +5,7 @@ import {
   success,
 } from '../../../utils/response-utils';
 import {
-  getById, createSerie, editSerie, editSerieStatus, getAllByUser, getAllByCreator
+  getById, createSerie, editSerie, editSerieStatus, getAllByUser, getAllByCreator, getByIdAndStatus
 } from './serie.service';
 
 const api = express.Router();
@@ -24,11 +24,26 @@ api.get('/serie', skipGuestQuery(CheckAuth), async (req, res) => {
   }
 });
 
+api.get('/serie/:serieId/episodes', CheckAuth, async (req, res) => {
+  try {
+    const { serieId } = req.params;
+    const { isPublished, page, limit } = req.query;
+    const creatorId = req.userInfo && req.userInfo._id ? req.userInfo._id : '';
+    console.log({ isPublished })
+    const results = await getByIdAndStatus({ creatorId, serieId, isPublished: isPublished == "true", page, limit });
+
+    return res.json(success(results));
+  } catch (err) {
+    return CommonError(req, err, res);
+  }
+});
+
 api.get('/serie/:serieId', skipGuestQuery(CheckAuth), async (req, res) => {
   try {
     const { serieId } = req.params;
+    const { page, limit } = req.query;
     const userId = req.userInfo && req.userInfo._id ? req.userInfo._id : '';
-    const results = await getById({ userId, serieId });
+    const results = await getById({ userId, serieId, page, limit });
 
     return res.json(success(results));
   } catch (err) {

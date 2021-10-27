@@ -18,6 +18,8 @@ export const getById = async ({ userId, episodeId }) => {
 
     if (!serie) throw new Error('SERIE.SERIE_NOT_FOUND');
 
+    const similarEpisodes = await Episodes.findAll({ where: { serieId: serie.serieId }, limit: 12 })
+
     const categoryId = serie.categoryId;
 
     const category = await Categories.findOne({ where: { categoryId } });
@@ -49,6 +51,7 @@ export const getById = async ({ userId, episodeId }) => {
             alreadyLiked: isLike !== null,
             likeInit: 0,
             isBought,
+            similarEpisodes,
         }
     };
 

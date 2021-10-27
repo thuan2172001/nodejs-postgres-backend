@@ -62,7 +62,8 @@
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-jsx-a11y": "^6.4.1",
     "eslint-plugin-react": "^7.21.5",
-    "eslint-plugin-react-hooks": "^4.0.0"
+    "eslint-plugin-react-hooks": "^4.0.0",
+    "is-svg": "^4.3.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.14.5",

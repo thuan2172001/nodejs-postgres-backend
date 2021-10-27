@@ -207,7 +207,7 @@ export const editUser = async ({ userId, fullName, age, phoneNumber }) => {
 
 export const createUser = async ({ username, email, fullName, publicKey, encryptedPrivateKey, phoneNumber, age }) => {
 
-    if (!username || !email || !fullName || !publicKey || !encryptedPrivateKey || !phoneNumber || !age) {
+    if (!username || !email || !fullName || !publicKey || !encryptedPrivateKey) {
         throw new Error('USER.CREATE_USER.MISSING_FIELD')
     }
 
