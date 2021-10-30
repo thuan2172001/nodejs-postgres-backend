@@ -7,9 +7,36 @@ import { Bookshelves } from "../../../models/bookshelf";
 import { Creators } from "../../../models/creator";
 import { createStripeAccount } from "../payment/stripe.service";
 import { removeEmptyValueObject } from "../../../utils/validate-utils";
+import { getPagination } from "../../../utils/pagination";
 
 const { DataTypes } = require("sequelize");
 const uuidv1 = require("uuidv1");
+
+export const getAllUser = async ({ creatorId, page = 1, limit = 1000 }) => {
+  const creator = await Creators.findOne({ where: { _id: creatorId } });
+
+  if (!creator) throw new Error("USER.GET_ALL.CREATOR_NOT_FOUND");
+
+  const userList = await Users.findAll();
+
+  const dataFormatter = userList.map((user) => {
+    const dataValues = user.dataValues;
+    return {
+      _id: dataValues._id,
+      username: dataValues.username,
+      email: dataValues.email,
+      fullName: dataValues.fullName,
+      phoneNumber: dataValues.phoneNumber,
+      age: dataValues.age,
+      isBanned: dataValues.isBanned,
+    };
+  });
+
+  return {
+    data: getPagination({ array: dataFormatter, page, limit }),
+    total: dataFormatter.length,
+  };
+};
 
 export const getCartData = async ({ userId }) => {
   const user = await Users.findOne({ where: { _id: userId } });
@@ -109,7 +136,12 @@ export const getBookshelfData = async ({ userId, page = 1, limit = 1000 }) => {
   };
 };
 
-export const getFavoriteEpisodes = async ({ userId, type = "EPISODE" }) => {
+export const getFavoriteEpisodes = async ({
+  userId,
+  type = "EPISODE",
+  page,
+  limit,
+}) => {
   const user = await Users.findOne({ where: { _id: userId } });
 
   if (!user) throw new Error("USER.USER_NOT_FOUND");
@@ -283,14 +315,15 @@ export const createUser = async ({
   return result;
 };
 
-export const editUserStatus = async ({ authId, username, type }) => {
+export const editUserStatus = async ({ authId, userId, type }) => {
+  console.log({ userId, type });
   const creator = await Creators.findOne({ where: { _id: authId } });
 
   if (!creator) throw new Error("USER.EDIT_STATUS.NOT_HAVE_PERMISSION");
 
-  if (!username) throw new Error("USER.EDIT_STATUS.USERNAME_IS_REQUIRED");
+  if (!userId) throw new Error("USER.EDIT_STATUS.USERID_IS_REQUIRED");
 
-  const user = await Users.findOne({ where: { username: username } });
+  const user = await Users.findOne({ where: { _id: userId } });
 
   if (!user) throw new Error("USER.EDIT_STATUS.USER_NOT_FOUND");
 
@@ -299,6 +332,6 @@ export const editUserStatus = async ({ authId, username, type }) => {
 
   const isBanned = type === "BAN_USER" ? true : false;
 
-  const result = await Users.update({ isBanned }, { where: { username } });
+  const result = await Users.update({ isBanned }, { where: { _id: userId } });
   return result;
 };

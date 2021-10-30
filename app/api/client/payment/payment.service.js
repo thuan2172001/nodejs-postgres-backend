@@ -1,18 +1,18 @@
-const axios = require('axios');
-const Stripe = require('stripe');
-const qs = require('qs');
+const axios = require("axios");
+const Stripe = require("stripe");
+const qs = require("qs");
 const {
   getCustomerPaymentMethod,
   deduplicatePaymentMethods,
-  // detachPaymentMethod,
+  detachPaymentMethod,
   // checkout,
-} = require('./stripe.service');
-const { Users } = require('../../../models/user')
-const { Bookshelves } = require('../../../models/bookshelf')
-const { Carts } = require('../../../models/cart')
+} = require("./stripe.service");
+const { Users } = require("../../../models/user");
+const { Bookshelves } = require("../../../models/bookshelf");
+const { Carts } = require("../../../models/cart");
 
-const { hookPromise } = require('../../library/customPromise');
-const { isValidString } = require('../../../utils/validate-utils');
+const { hookPromise } = require("../../library/customPromise");
+const { isValidString } = require("../../../utils/validate-utils");
 
 export const addPayment = async ({
   userInfo,
@@ -20,30 +20,30 @@ export const addPayment = async ({
   nameOnCard,
   futureUsage = true,
 }) => {
-  console.log({ userInfo, paymentMethodInfo, nameOnCard, futureUsage })
+  console.log({ userInfo, paymentMethodInfo, nameOnCard, futureUsage });
 
   if (!nameOnCard) {
-    throw new Error('PAYMENT.INVALID_CARD_NAME');
+    throw new Error("PAYMENT.INVALID_CARD_NAME");
   }
 
   const role = userInfo?.role;
 
-  if (role !== 'user') {
-    throw new Error('PAYMENT.NOT_USER_ROLE');
+  if (role !== "user") {
+    throw new Error("PAYMENT.NOT_USER_ROLE");
   }
 
-  const user = await Users.findOne({ where: { _id: userInfo._id } })
+  const user = await Users.findOne({ where: { _id: userInfo._id } });
 
   if (!user) {
-    throw new Error('PAYMENT.USER_NOT_FOUND')
+    throw new Error("PAYMENT.USER_NOT_FOUND");
   }
 
   if (
     !paymentMethodInfo ||
     !paymentMethodInfo.payment_method ||
-    paymentMethodInfo.status !== 'succeeded'
+    paymentMethodInfo.status !== "succeeded"
   ) {
-    throw new Error('PAYMENT.SET_UP_FAILED');
+    throw new Error("PAYMENT.SET_UP_FAILED");
   }
 
   const paymentMethods = await getCustomerPaymentMethod({
@@ -59,7 +59,7 @@ export const addPayment = async ({
   ) {
     await deduplicatePaymentMethods({ customerID: user.stripeAccount });
 
-    throw new Error('PAYMENT.CARD_EXISTED');
+    throw new Error("PAYMENT.CARD_EXISTED");
   }
 
   return [];
@@ -98,37 +98,58 @@ export const addPayment = async ({
 };
 
 export const getAllPaymentMethods = async ({ userId }) => {
-  const user = await Users.findOne({ where: { _id: userId } })
+  const user = await Users.findOne({ where: { _id: userId } });
 
   if (!user) {
-    throw new Error('PAYMENT.USER.NOT_FOUND');
+    throw new Error("PAYMENT.USER.NOT_FOUND");
   }
 
   const { stripeAccount } = user;
 
   if (!stripeAccount) {
-    throw new Error('PAYMENT.STRIPE_ACCOUNT_NOT_FOUND');
+    throw new Error("PAYMENT.STRIPE_ACCOUNT_NOT_FOUND");
   }
 
   return getCustomerPaymentMethod({
     customerID: stripeAccount,
   });
-}
+};
+
+export const deletePayment = async ({ userId, paymentMethodId }) => {
+  const user = await Users.findOne({ where: { _id: userId } });
+
+  if (!user) {
+    throw new Error("PAYMENT.USER.NOT_FOUND");
+  }
+
+  const { stripeAccount } = user;
+
+  if (!stripeAccount) {
+    throw new Error("PAYMENT.STRIPE_ACCOUNT_NOT_FOUND");
+  }
+
+  const status = await detachPaymentMethod({ paymentMethodId });
+
+  return status;
+};
 
 export const checkoutOrder = async ({
-  cartList, payment, currency, userInfo
+  cartList,
+  payment,
+  currency,
+  userInfo,
 }) => {
-  if (!userInfo) throw new Error('PAYMENT.CHECKOUT.NOT_AN_USER')
+  if (!userInfo) throw new Error("PAYMENT.CHECKOUT.NOT_AN_USER");
 
-  const user = await Users.findOne({ where: { _id: userInfo._id } })
+  const user = await Users.findOne({ where: { _id: userInfo._id } });
 
-  if (!user) throw new Error('PAYMENT.CHECKOUT.USER_NOT_FOUND')
+  if (!user) throw new Error("PAYMENT.CHECKOUT.USER_NOT_FOUND");
 
-  const bookshelf = await Bookshelves.findOne({ where: { userId: user._id } })
+  const bookshelf = await Bookshelves.findOne({ where: { userId: user._id } });
 
-  const bookshelfItems = bookshelf ? bookshelf.dataValues?.bookshelfItems : []
+  const bookshelfItems = bookshelf ? bookshelf.dataValues?.bookshelfItems : [];
 
-  const newBookshelfItems = [...new Set([...bookshelfItems, ...cartList])]
+  const newBookshelfItems = [...new Set([...bookshelfItems, ...cartList])];
 
   let result;
 
@@ -136,30 +157,30 @@ export const checkoutOrder = async ({
     const newBookshelf = await Bookshelves.create({
       userId: user._id,
       bookshelfItems: newBookshelfItems,
-    })
-    newBookshelf ? result = [1] : [0];
+    });
+    newBookshelf ? (result = [1]) : [0];
   } else {
     result = await Bookshelves.update(
       { bookshelfItems: newBookshelfItems },
-      { where: { userId: user._id } },
-    )
+      { where: { userId: user._id } }
+    );
   }
 
   if (result.length < 0 || result[0] === 0) return null;
 
-  const cart = await Carts.findOne({ where: { userId: user._id } })
+  const cart = await Carts.findOne({ where: { userId: user._id } });
 
-  const cartItems = cart ? cart.dataValues?.cartItems : []
+  const cartItems = cart ? cart.dataValues?.cartItems : [];
 
-  const newCartItems = cartItems.filter(ele => {
+  const newCartItems = cartItems.filter((ele) => {
     return cartList.indexOf(ele) < 0;
-  })
+  });
 
   const updateCartStatus = await Carts.update(
     { cartItems: newCartItems },
-    { where: { userId: user._id } },
-  )
+    { where: { userId: user._id } }
+  );
 
-  console.log({ updateCartStatus })
+  console.log({ updateCartStatus });
   return result;
-}
+};

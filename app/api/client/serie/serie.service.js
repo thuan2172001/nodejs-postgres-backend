@@ -31,7 +31,7 @@ export const getAllByUser = async ({
   if (!userId)
     return {
       data: getPagination({ array: seriesData, page, limit }),
-      totalSeries: results.length,
+      totalSeries: seriesData.length,
     };
 
   await Promise.all(

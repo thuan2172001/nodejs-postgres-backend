@@ -7,6 +7,7 @@ const { Users } = require('../../../models/user');
 
 const stripe = Stripe(STRIPE_API_KEY);
 
+// get all payment methods
 export const getCustomerPaymentMethod = async ({ customerID }) => {
     const paymentMethods = await stripe.paymentMethods.list({
         customer: customerID,
@@ -16,6 +17,7 @@ export const getCustomerPaymentMethod = async ({ customerID }) => {
     return paymentMethods.data;
 };
 
+// call when create new user
 export const createStripeAccount = async ({ email, metadata }) => {
     const data = qs.stringify({
         email,
@@ -39,6 +41,7 @@ export const createStripeAccount = async ({ email, metadata }) => {
     return response.data;
 };
 
+// delete duplicated payment methods
 export const deduplicatePaymentMethods = async ({
     customerID: customer,
     type = 'card',
@@ -65,6 +68,7 @@ export const deduplicatePaymentMethods = async ({
     }
 };
 
+// call when set up new card
 export const setupPaymentIntent = async ({ userInfo }) => {
     if (userInfo.role !== 'user') {
         throw new Error('STRIPE.SETUP_PAYMENT.NOT_USER_ROLE');
@@ -89,4 +93,9 @@ export const setupPaymentIntent = async ({ userInfo }) => {
         customer: stripeAccount,
         usage: 'on_session',
     });
+};
+
+// call when remove cart
+export const detachPaymentMethod = async ({ paymentMethodId }) => {
+    return stripe.paymentMethods.detach(paymentMethodId);
 };
