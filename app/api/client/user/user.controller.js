@@ -14,6 +14,7 @@ import {
   updateBookshelf,
   getFavoriteEpisodes,
   getAllUser,
+  findUsersByPattern,
 } from "./user.service";
 import { STRIPE_PUBLIC_KEY } from "../../../environment";
 
@@ -22,9 +23,15 @@ const api = express.Router();
 api.get("/user", CheckAuth, async (req, res) => {
   try {
     const creatorId = req.userInfo && req.userInfo._id ? req.userInfo._id : "";
-    const { page, limit } = req.query;
-    console.log({ page, limit });
-    const results = await getAllUser({ creatorId, page, limit });
+    const { page, limit, pattern } = req.query;
+    let results = null;
+
+    if (pattern) {
+      results = await findUsersByPattern({creatorId, page, limit, pattern});
+    } else {
+      results = await getAllUser({ creatorId, page, limit });
+    }
+
     return res.json(success(results));
   } catch (err) {
     return CommonError(req, err, res);
@@ -124,7 +131,7 @@ api.put("/user/bookshelf", CheckAuth, async (req, res) => {
   }
 });
 
-api.put("/user/:userId/status", CheckAuth, async (req, res) => {
+api.put("/user/:userId/status", CheckAuth, async (req, res) => {  
   try {
     const authId = req.userInfo && req.userInfo._id ? req.userInfo._id : "";
 

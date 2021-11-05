@@ -17,7 +17,7 @@ export const getAllUser = async ({ creatorId, page = 1, limit = 1000 }) => {
 
   if (!creator) throw new Error("USER.GET_ALL.CREATOR_NOT_FOUND");
 
-  const userList = await Users.findAll();
+  const userList = await Users.findAll({ order: [["username", "ASC"]] });
 
   const dataFormatter = userList.map((user) => {
     const dataValues = user.dataValues;
@@ -34,6 +34,33 @@ export const getAllUser = async ({ creatorId, page = 1, limit = 1000 }) => {
 
   return {
     data: getPagination({ array: dataFormatter, page, limit }),
+    total: dataFormatter.length,
+  };
+};
+
+export const findUsersByPattern = async ({
+  creatorId,
+  page = 1,
+  limit = 100,
+  pattern = "",
+}) => {
+  const creator = await Creators.findOne({ where: { _id: creatorId } });
+
+  if (!creator) throw new Error("USER.GET_ALL.CREATOR_NOT_FOUND");
+
+  const userList = await Users.findAll({
+    where: {
+      username: {
+        [Op.like]: `%${pattern}%`,
+      },
+    },
+    order: [["username", "ASC"]],
+  });
+
+  console.log({ userList });
+
+  return {
+    data: getPagination({ array: userList, page, limit }),
     total: dataFormatter.length,
   };
 };

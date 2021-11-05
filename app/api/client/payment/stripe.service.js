@@ -38,7 +38,7 @@ export const createStripeAccount = async ({ email, metadata }) => {
         JSON.stringify(err.response)
     );
 
-    return response.data;
+    return response?.data;
 };
 
 // delete duplicated payment methods
