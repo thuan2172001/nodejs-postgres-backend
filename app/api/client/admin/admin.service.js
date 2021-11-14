@@ -3,6 +3,7 @@ import { Episodes } from '../../../models/episode';
 import { Categories } from '../../../models/category';
 import { Series } from '../../../models/serie';
 import { Bookshelves} from "../../../models/bookshelf";
+import { PaymentMethods} from "../../../models/payment_method";
 
 export const getAll = async (args = {}, model) => {
   let modelSchema;
@@ -21,6 +22,9 @@ export const getAll = async (args = {}, model) => {
       break;
     case 'Bookshelves':
       modelSchema = Bookshelves;
+      break;
+    case 'PaymentMethods':
+      modelSchema = PaymentMethods;
       break;
   }
   const results = await modelSchema.findAll();

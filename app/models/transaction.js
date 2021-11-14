@@ -3,25 +3,23 @@ import { Sql } from '../database';
 
 const { DataTypes } = require('sequelize');
 
-const PaymentMethods = Sql.define('payment_methods', {
-    paymentId: {
+const Transactions = Sql.define('transactions', {
+    transactionId: {
         type: DataTypes.UUID,
-        primaryKey: true,
-        allowNull: false
-    },
-    nameOnCard: {
-        type: DataTypes.STRING,
         allowNull: false,
-    },
-    card: {
-        type: DataTypes.JSON,
+        primaryKey: true,
     },
     userId: {
         type: DataTypes.UUID,
-        allowNull: false,
     },
-    futureUsage: {
-        type: DataTypes.BOOLEAN,
+    paymentId: {
+        type: DataTypes.UUID,
+    },
+    value: {
+        type: DataTypes.FLOAT,
+    },
+    items: {
+        type: DataTypes.ARRAY(DataTypes.UUID),
     },
 }, {
     // disable the modification of table names; By default, sequelize will automatically
@@ -30,10 +28,10 @@ const PaymentMethods = Sql.define('payment_methods', {
     freezeTableName: true,
 });
 
-PaymentMethods.belongsTo(Users, {
+Transactions.belongsTo(Users, {
     foreignKey: 'userId',
     onDelete: "CASCADE",
     as: "createdBy",
 })
 
-module.exports.PaymentMethods = PaymentMethods;
+module.exports.Transactions = Transactions;

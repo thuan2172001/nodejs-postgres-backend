@@ -8,6 +8,8 @@ import { generateSerie } from './seed-serie';
 import { generateUser } from './seed-user';
 import { generateBookshelf } from "./seed-bookshelf";
 import { generateCode } from './seed-code';
+import { generateTransaction } from './seed-transaction';
+import { generatePayment } from './seed-payments';
 
 export const seed = async () => {
     if (SEED_DATA === 'true') {
@@ -21,8 +23,10 @@ const _seed = async () => {
     await generateSerie();
     await generateEpisode();
     await generateUser();
+    await generatePayment();
     await generateCode();
     await generateCarts();
     await generateLikes();
     await generateBookshelf();
+    await generateTransaction();
 };

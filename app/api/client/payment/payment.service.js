@@ -10,9 +10,10 @@ const {
 const { Users } = require("../../../models/user");
 const { Bookshelves } = require("../../../models/bookshelf");
 const { Carts } = require("../../../models/cart");
-
-const { hookPromise } = require("../../library/customPromise");
+const { PaymentMethods } = require("../../../models/payment_method");
+const { Transactions } = require("../../../models/transaction");
 const { isValidString } = require("../../../utils/validate-utils");
+const uuidv1 = require("uuidv1");
 
 export const addPayment = async ({
   userInfo,
@@ -20,8 +21,6 @@ export const addPayment = async ({
   nameOnCard,
   futureUsage = true,
 }) => {
-  console.log({ userInfo, paymentMethodInfo, nameOnCard, futureUsage });
-
   if (!nameOnCard) {
     throw new Error("PAYMENT.INVALID_CARD_NAME");
   }
@@ -62,39 +61,25 @@ export const addPayment = async ({
     throw new Error("PAYMENT.CARD_EXISTED");
   }
 
-  return [];
+  const paymentStripeId = paymentMethodInfo.payment_method || "";
 
-  // const existingPaymentMethod = await PaymentMethod.findOne({
-  //   'card.payment_method': paymentMethodInfo.payment_method,
-  // });
+  const allCard = await getAllPaymentMethods({ userId: userInfo._id });
 
-  // if (existingPaymentMethod) {
-  //   throw new Error('PAYMENT.EXISTED');
-  // }
+  const card = allCard.filter((card) => card.id === paymentStripeId);
 
-  // const newPaymentMethod = new PaymentMethod({
-  //   nameOnCard: nameOnCard.toUpperCase(),
-  //   card: paymentMethodInfo,
-  //   user: customer._id,
-  //   futureUsage,
-  // });
+  if (card.length < 0) {
+    throw new Error("PAYMENT.CARD_NOT_EXISTED_IN_STRIPE");
+  }
 
-  // const savedPaymentMethod = await newPaymentMethod.save();
+  await PaymentMethods.create({
+    paymentId: uuidv1(),
+    nameOnCard,
+    card: card[0],
+    userId: userInfo._id,
+    futureUsage,
+  });
 
-  // const { nModified, ok } = await Customer.updateOne(
-  //   {
-  //     _id: customer._id,
-  //   },
-  //   {
-  //     $push: { paymentMethods: savedPaymentMethod._id },
-  //   }
-  // );
-
-  // if (nModified !== 1 || ok !== 1) {
-  //   throw new Error('PAYMENT.ADD_FAILED');
-  // }
-
-  // return savedPaymentMethod;
+  return card[0];
 };
 
 export const getAllPaymentMethods = async ({ userId }) => {
@@ -136,7 +121,7 @@ export const deletePayment = async ({ userId, paymentMethodId }) => {
 export const checkoutOrder = async ({
   cartList,
   payment,
-  currency,
+  value = 999,
   userInfo,
 }) => {
   if (!userInfo) throw new Error("PAYMENT.CHECKOUT.NOT_AN_USER");
@@ -144,6 +129,8 @@ export const checkoutOrder = async ({
   const user = await Users.findOne({ where: { _id: userInfo._id } });
 
   if (!user) throw new Error("PAYMENT.CHECKOUT.USER_NOT_FOUND");
+
+  if (!payment) throw new Error("PAYMENT.PAYMENT_METHOD_REQUIRED");
 
   const bookshelf = await Bookshelves.findOne({ where: { userId: user._id } });
 
@@ -176,11 +163,17 @@ export const checkoutOrder = async ({
     return cartList.indexOf(ele) < 0;
   });
 
-  const updateCartStatus = await Carts.update(
+  await Carts.update(
     { cartItems: newCartItems },
     { where: { userId: user._id } }
   );
 
-  console.log({ updateCartStatus });
+  await Transactions.create({
+    transactionId: uuidv1(),
+    userId: user._id,
+    paymentId: payment,
+    value: value,
+    items: cartList
+  })
   return result;
 };

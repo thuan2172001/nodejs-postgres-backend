@@ -22,12 +22,12 @@ export const generateBookshelf = async () => {
             const userId = field[header.indexOf('_id')];
 
             // const items = itemsData.slice(1, itemsData.length - 1).split(',');
-            const items = [];
+            const initialBookshelf = [];
 
             const item = {
                 // userId: field[header.indexOf('userId')],
                 userId,
-                bookshelfItems: items,
+                bookshelfItems: initialBookshelf,
             };
             dataSeed.push(item);
         });

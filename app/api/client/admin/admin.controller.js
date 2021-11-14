@@ -65,4 +65,15 @@ api.get('/admin/bookshelves', async (req, res) => {
   }
 });
 
+api.get('/admin/payments', async (req, res) => {
+  try {
+    const args = req.query;
+    const results = await getAll(args, 'PaymentMethods');
+
+    return res.json(success(results));
+  } catch (err) {
+    return CommonError(req, err, res);
+  }
+});
+
 module.exports = api;
