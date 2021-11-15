@@ -15,6 +15,7 @@ import {
   getFavoriteEpisodes,
   getAllUser,
   findUsersByPattern,
+  getAllTransaction,
 } from "./user.service";
 import { STRIPE_PUBLIC_KEY } from "../../../environment";
 
@@ -27,7 +28,7 @@ api.get("/user", CheckAuth, async (req, res) => {
     let results = null;
 
     if (pattern) {
-      results = await findUsersByPattern({creatorId, page, limit, pattern});
+      results = await findUsersByPattern({ creatorId, page, limit, pattern });
     } else {
       results = await getAllUser({ creatorId, page, limit });
     }
@@ -131,7 +132,21 @@ api.put("/user/bookshelf", CheckAuth, async (req, res) => {
   }
 });
 
-api.put("/user/:userId/status", CheckAuth, async (req, res) => {  
+api.get("/user/:userId/transaction", CheckAuth, async (req, res) => {
+  try {
+    const authId = req.userInfo && req.userInfo._id ? req.userInfo._id : "";
+    const { userId } = req.params;
+    const transactions = await getAllTransaction({
+      authId,
+      userId,
+    });
+    return res.json(success(transactions));
+  } catch (err) {
+    return CommonError(req, err, res);
+  }
+});
+
+api.put("/user/:userId/status", CheckAuth, async (req, res) => {
   try {
     const authId = req.userInfo && req.userInfo._id ? req.userInfo._id : "";
 

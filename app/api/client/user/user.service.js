@@ -3,6 +3,8 @@ import { Likes } from "../../../models/like";
 import { Carts } from "../../../models/cart";
 import { Episodes } from "../../../models/episode";
 import { Series } from "../../../models/serie";
+import { Transactions } from "../../../models/transaction";
+import { PaymentMethods } from "../../../models/payment_method";
 import { Bookshelves } from "../../../models/bookshelf";
 import { Creators } from "../../../models/creator";
 import { createStripeAccount } from "../payment/stripe.service";
@@ -343,7 +345,6 @@ export const createUser = async ({
 };
 
 export const editUserStatus = async ({ authId, userId, type }) => {
-  console.log({ userId, type });
   const creator = await Creators.findOne({ where: { _id: authId } });
 
   if (!creator) throw new Error("USER.EDIT_STATUS.NOT_HAVE_PERMISSION");
@@ -361,4 +362,38 @@ export const editUserStatus = async ({ authId, userId, type }) => {
 
   const result = await Users.update({ isBanned }, { where: { _id: userId } });
   return result;
+};
+
+export const getAllTransaction = async ({ authId, userId }) => {
+  const creator = await Creators.findOne({ where: { _id: authId } });
+
+  if (!userId) throw new Error("USER.TRANSACTION.USERID_IS_REQUIRED");
+
+  const user = await Users.findOne({ where: { _id: userId } });
+
+  if (!user) throw new Error("USER.TRANSACTION.USER_NOT_FOUND");
+
+  if (!creator && authId !== userId)
+    throw new Error("USER.TRANSACTION.DONT_HAVE_PERMISSION");
+
+  const transactions = await Transactions.findAll({
+    userId,
+  });
+
+  const res = await Promise.all(
+    transactions.map(async ({ transactionId, paymentId, value, items }) => {
+      const payment = await PaymentMethods.findOne({
+        where: { paymentId },
+      });
+
+      return {
+        transactionId,
+        payment: payment.card,
+        value,
+        items,
+      };
+    })
+  );
+
+  return res;
 };

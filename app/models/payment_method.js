@@ -5,7 +5,7 @@ const { DataTypes } = require('sequelize');
 
 const PaymentMethods = Sql.define('payment_methods', {
     paymentId: {
-        type: DataTypes.UUID,
+        type: DataTypes.STRING,
         primaryKey: true,
         allowNull: false
     },

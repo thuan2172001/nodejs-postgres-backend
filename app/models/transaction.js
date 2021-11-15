@@ -13,7 +13,7 @@ const Transactions = Sql.define('transactions', {
         type: DataTypes.UUID,
     },
     paymentId: {
-        type: DataTypes.UUID,
+        type: DataTypes.STRING,
     },
     value: {
         type: DataTypes.FLOAT,

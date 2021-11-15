@@ -80,13 +80,13 @@ api.get("/payment/create-setup-intent", CheckAuth, async (req, res) => {
 
 api.post("/payment/checkout", CheckAuth, async (req, res) => {
   try {
-    const { cartList, payment, currency } = req.body;
+    const { cartList, payment, value } = req.body;
     const userInfo = req.userInfo.toJSON();
 
     const status = await checkoutOrder({
       cartList,
       payment,
-      currency,
+      value,
       userInfo,
     });
 

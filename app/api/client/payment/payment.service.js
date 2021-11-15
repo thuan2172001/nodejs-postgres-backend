@@ -72,7 +72,7 @@ export const addPayment = async ({
   }
 
   await PaymentMethods.create({
-    paymentId: uuidv1(),
+    paymentId: card[0]["id"],
     nameOnCard,
     card: card[0],
     userId: userInfo._id,
