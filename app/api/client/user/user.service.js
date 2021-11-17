@@ -364,7 +364,7 @@ export const editUserStatus = async ({ authId, userId, type }) => {
   return result;
 };
 
-export const getAllTransaction = async ({ authId, userId }) => {
+export const getAllTransaction = async ({ authId, userId , page = 1, limit = 1000 }) => {
   const creator = await Creators.findOne({ where: { _id: authId } });
 
   if (!userId) throw new Error("USER.TRANSACTION.USERID_IS_REQUIRED");
@@ -380,7 +380,7 @@ export const getAllTransaction = async ({ authId, userId }) => {
     userId,
   });
 
-  const res = await Promise.all(
+  const result = await Promise.all(
     transactions.map(async ({ transactionId, paymentId, value, items }) => {
       const payment = await PaymentMethods.findOne({
         where: { paymentId },
@@ -395,5 +395,8 @@ export const getAllTransaction = async ({ authId, userId }) => {
     })
   );
 
-  return res;
+  return {
+    data: getPagination({ array: result, page, limit }),
+    total: result.length,
+  };
 };

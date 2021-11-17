@@ -136,9 +136,12 @@ api.get("/user/:userId/transaction", CheckAuth, async (req, res) => {
   try {
     const authId = req.userInfo && req.userInfo._id ? req.userInfo._id : "";
     const { userId } = req.params;
+    const { page, limit } = req.query;
     const transactions = await getAllTransaction({
       authId,
       userId,
+      page, 
+      limit,
     });
     return res.json(success(transactions));
   } catch (err) {
