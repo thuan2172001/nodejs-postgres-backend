@@ -18,12 +18,14 @@ export const getAllByUser = async ({
   limit = 100,
   categoryId = null,
 }) => {
-  console.log({ userId, page, categoryId });
-
   const seriesData = !categoryId
-    ? await Series.findAll({ where: { isPublished: true } })
+    ? await Series.findAll({
+        where: { isPublished: true },
+        order: [["createdAt", "DESC"]],
+      })
     : await Series.findAll({
         where: { categoryId, isPublished: true },
+        order: [["createdAt", "DESC"]],
       });
 
   let results = [];
@@ -68,9 +70,11 @@ export const getAllByCreator = async ({
 
   const publishedSeries = await Series.findAll({
     where: { isPublished: true },
+    order: [["createdAt", "DESC"]],
   });
   const unpublishedSeries = await Series.findAll({
     where: { isPublished: false },
+    order: [["createdAt", "DESC"]],
   });
 
   console.log({ isPublished });
