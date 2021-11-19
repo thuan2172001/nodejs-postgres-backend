@@ -12,11 +12,11 @@ const api = express.Router();
 
 api.get('/serie', skipGuestQuery(CheckAuth), async (req, res) => {
   try {
-    const { page, limit, categoryId, isCreator, isPublished } = req.query;
+    const { page, limit, categoryId, isCreator, isPublished, pattern } = req.query;
     const userId = req.userInfo && req.userInfo._id ? req.userInfo._id : '';
     const results = (isCreator && isCreator != 'false') ?
       await getAllByCreator({ userId, page, limit, isPublished }) :
-      await getAllByUser({ userId, page, limit, categoryId });
+      await getAllByUser({ userId, page, limit, categoryId, pattern });
 
     return res.json(success(results));
   } catch (err) {

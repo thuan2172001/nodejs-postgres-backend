@@ -170,6 +170,7 @@ export const getFavoriteEpisodes = async ({
   type = "EPISODE",
   page,
   limit,
+  pattern = null,
 }) => {
   const user = await Users.findOne({ where: { _id: userId } });
 
@@ -187,11 +188,22 @@ export const getFavoriteEpisodes = async ({
         const episodeData = await Episodes.findOne({ where: { episodeId } });
         const likes = await Likes.findAll({ where: { episodeId } });
         const episodeDataValue = episodeData.dataValues;
-        result.push({
-          ...episodeDataValue,
-          totalLikes: episodeData.likeInit + likes.length,
-          alreadyLiked: true,
-        });
+        if (pattern) {
+          const episodeName = episodeDataValue.name;
+          if (episodeName.includes(pattern)) {
+            result.push({
+              ...episodeDataValue,
+              totalLikes: episodeData.likeInit + likes.length,
+              alreadyLiked: true,
+            });
+          }
+        } else {
+          result.push({
+            ...episodeDataValue,
+            totalLikes: episodeData.likeInit + likes.length,
+            alreadyLiked: true,
+          });
+        }
       })
     );
   } else if (type == "SERIES") {
@@ -204,11 +216,23 @@ export const getFavoriteEpisodes = async ({
         const serieData = await Series.findOne({ where: { serieId } });
         const likes = await Likes.findAll({ where: { serieId } });
         const serieDataValue = serieData.dataValues;
-        result.push({
-          ...serieDataValue,
-          totalLikes: 1000 + likes.length,
-          alreadyLiked: true,
-        });
+        if (pattern) {
+          const seriesName = serieDataValue.serieName;
+          if (seriesName.includes(pattern)) {
+            result.push({
+              ...serieDataValue,
+              totalLikes: 1000 + likes.length,
+              alreadyLiked: true,
+            });
+          }
+        } else {
+          result.push({
+            ...serieDataValue,
+            totalLikes: 1000 + likes.length,
+            alreadyLiked: true,
+          });
+        }
+        
       })
     );
   } else {
