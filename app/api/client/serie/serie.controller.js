@@ -41,9 +41,9 @@ api.get('/serie/:serieId/episodes', CheckAuth, async (req, res) => {
 api.get('/serie/:serieId', skipGuestQuery(CheckAuth), async (req, res) => {
   try {
     const { serieId } = req.params;
-    const { page, limit } = req.query;
+    const { page, limit, pattern } = req.query;
     const userId = req.userInfo && req.userInfo._id ? req.userInfo._id : '';
-    const results = await getById({ userId, serieId, page, limit });
+    const results = await getById({ userId, serieId, page, limit, pattern });
 
     return res.json(success(results));
   } catch (err) {

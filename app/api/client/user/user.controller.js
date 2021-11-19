@@ -99,7 +99,8 @@ api.put("/user/cart", CheckAuth, async (req, res) => {
 api.get("/user/bookshelf-data", CheckAuth, async (req, res) => {
   try {
     const userId = req.userInfo && req.userInfo._id ? req.userInfo._id : "";
-    const results = await getBookshelfData({ userId });
+    const {limit, page, pattern }= req.query;
+    const results = await getBookshelfData({ userId, limit, page, pattern });
 
     return res.json(success(results));
   } catch (err) {

@@ -7,6 +7,7 @@ import { Likes } from "../../../models/like";
 import { Creators } from "../../../models/creator";
 import { removeEmptyValueObject } from "../../../utils/validate-utils";
 import { getPagination } from "../../../utils/pagination";
+import { Op } from "sequelize";
 
 const { DataTypes } = require("sequelize");
 const uuidv1 = require("uuidv1");
@@ -125,6 +126,7 @@ export const getById = async ({
   serieId,
   page = 1,
   limit = 100,
+  pattern = null,
 }) => {
   const serie = await Series.findOne({ where: { serieId: serieId } });
 
@@ -136,7 +138,12 @@ export const getById = async ({
 
   if (!category) throw new Error("SERIE.CATEGORY_NOT_FOUND");
 
-  const episodesData = await Episodes.findAll({ where: { serieId: serieId } });
+  const episodesData = await Episodes.findAll({ where: { 
+    serieId: serieId, 
+    name: {
+      [Op.like]: `%${pattern ?? ""}`
+    }}
+  });
 
   const likes = await Likes.findAll({ where: { serieId } });
 

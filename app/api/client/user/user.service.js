@@ -10,6 +10,7 @@ import { Creators } from "../../../models/creator";
 import { createStripeAccount } from "../payment/stripe.service";
 import { removeEmptyValueObject } from "../../../utils/validate-utils";
 import { getPagination } from "../../../utils/pagination";
+import { Op } from "sequelize";
 
 const { DataTypes } = require("sequelize");
 const uuidv1 = require("uuidv1");
@@ -128,7 +129,7 @@ export const updateCart = async ({ userId, cartItems }) => {
   return result;
 };
 
-export const getBookshelfData = async ({ userId, page = 1, limit = 1000 }) => {
+export const getBookshelfData = async ({ userId, page = 1, limit = 1000, pattern = null }) => {
   const user = await Users.findOne({ where: { _id: userId } });
 
   if (!user) throw new Error("USER.USER_NOT_FOUND");
@@ -150,11 +151,22 @@ export const getBookshelfData = async ({ userId, page = 1, limit = 1000 }) => {
           where: { episodeId, userId },
         });
         const episodeDataValue = episodeData.dataValues;
-        result.push({
-          ...episodeDataValue,
-          totalLikes: episodeData.likeInit + likes.length,
-          alreadyLiked: alreadyLiked !== null,
-        });
+        if (pattern) {
+          const episodeName = episodeDataValue.name;
+          if (episodeName.includes(pattern)) {
+            result.push({
+              ...episodeDataValue,
+              totalLikes: episodeData.likeInit + likes.length,
+              alreadyLiked: alreadyLiked !== null,
+            });
+          }
+        } else {
+          result.push({
+            ...episodeDataValue,
+            totalLikes: episodeData.likeInit + likes.length,
+            alreadyLiked: alreadyLiked !== null,
+          });
+        }
       }
     })
   );
