@@ -12,9 +12,10 @@ const getPageSize = (buffer) =>
 		const pdfParser = new PDFParser();
 		pdfParser.parseBuffer(buffer);
 		pdfParser.on('pdfParser_dataReady', (pdfData) => {
+			console.log({pdfData});
 			const width = pdfData.formImage?.Width * 25 || 500;
 			const height = pdfData.formImage?.Pages[0]?.Height * 25 || 500;
-			const pageNumber = pdfData.formImage.Pages?.length || 1;
+			const pageNumber = pdfData.formImage?.Pages?.length || 1;
 			res({ width, height, pageNumber });
 		});
 		pdfParser.on('pdfParser_dataError', (err) => {

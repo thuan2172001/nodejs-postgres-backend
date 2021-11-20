@@ -91,8 +91,6 @@ export const getAllByCreator = async ({
     order: [["createdAt", "DESC"]],
   });
 
-  console.log({ isPublished });
-
   const seriesData =
     isPublished !== null
       ? isPublished == "false"
@@ -100,7 +98,6 @@ export const getAllByCreator = async ({
         : publishedSeries
       : { ...unpublishedSeries, ...publishedSeries };
 
-  console.log({ seriesData });
   let results = [];
 
   await Promise.all(
@@ -138,7 +135,6 @@ export const getById = async ({
 
   if (!category) throw new Error("SERIE.CATEGORY_NOT_FOUND");
 
-  console.log({pattern});
   const episodesData = await Episodes.findAll({ where: { 
     serieId: serieId, 
     name: {
