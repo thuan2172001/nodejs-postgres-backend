@@ -25,7 +25,7 @@ export const getAllByUser = async ({
         where: { 
           isPublished: true,
           serieName: {
-            [Op.like]: `%${pattern ?? ""}%`,
+            [Op.iLike]: `%${pattern?.toString().toLowerCase() ?? ""}%`,
           }
         },
         order: [["createdAt", "DESC"]],
@@ -35,7 +35,7 @@ export const getAllByUser = async ({
           categoryId, 
           isPublished: true, 
           serieName: {
-           [Op.like]: `%${pattern ?? ""}%`,
+            [Op.iLike]: `%${pattern?.toString().toLowerCase() ?? ""}%`,
           }
        },
         order: [["createdAt", "DESC"]],
@@ -138,10 +138,11 @@ export const getById = async ({
 
   if (!category) throw new Error("SERIE.CATEGORY_NOT_FOUND");
 
+  console.log({pattern});
   const episodesData = await Episodes.findAll({ where: { 
     serieId: serieId, 
     name: {
-      [Op.like]: `%${pattern ?? ""}`
+      [Op.iLike]: `%${pattern?.toString().toLowerCase() ?? ""}%`
     }}
   });
 

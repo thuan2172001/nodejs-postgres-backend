@@ -153,7 +153,7 @@ export const getBookshelfData = async ({ userId, page = 1, limit = 1000, pattern
         const episodeDataValue = episodeData.dataValues;
         if (pattern) {
           const episodeName = episodeDataValue.name;
-          if (episodeName.includes(pattern)) {
+          if (episodeName.toLowerCase().includes(pattern.toLowerCase())) {
             result.push({
               ...episodeDataValue,
               totalLikes: episodeData.likeInit + likes.length,
@@ -202,7 +202,7 @@ export const getFavoriteEpisodes = async ({
         const episodeDataValue = episodeData.dataValues;
         if (pattern) {
           const episodeName = episodeDataValue.name;
-          if (episodeName.includes(pattern)) {
+          if (episodeName.toLowerCase().includes(pattern.toLowerCase())) {
             result.push({
               ...episodeDataValue,
               totalLikes: episodeData.likeInit + likes.length,
@@ -230,7 +230,7 @@ export const getFavoriteEpisodes = async ({
         const serieDataValue = serieData.dataValues;
         if (pattern) {
           const seriesName = serieDataValue.serieName;
-          if (seriesName.includes(pattern)) {
+          if (seriesName.toLowerCase().includes(pattern.toLowerCase())) {
             result.push({
               ...serieDataValue,
               totalLikes: 1000 + likes.length,
@@ -416,12 +416,13 @@ export const getAllTransaction = async ({ authId, userId , page = 1, limit = 100
     userId,
   });
 
-  const result = await Promise.all(
+  const data = await Promise.all(
     transactions.map(async ({ transactionId, paymentId, value, items }) => {
       const payment = await PaymentMethods.findOne({
         where: { paymentId },
       });
 
+      if(!payment) return null;
       return {
         transactionId,
         payment: payment.card,
@@ -430,6 +431,8 @@ export const getAllTransaction = async ({ authId, userId , page = 1, limit = 100
       };
     })
   );
+
+  const result = data.filter(ele => ele !== null);
 
   return {
     data: getPagination({ array: result, page, limit }),
