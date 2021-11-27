@@ -26,6 +26,9 @@ api.post('/upload', upload.any(), CheckAuth, async (req, res) => {
 
     if (!req.files) return res.json(badRequest('FILE.UPLOAD.FILE_IS_REQUIRED'));
 
+    if (!req.files || req.files.length <= 0) {
+      return res.json(badRequest('FILE.UPLOAD'))
+    }
     const { key, location, pageNumber } = req.files[0];
     return res.json(success({ key, location, pageNumber }));
   });
