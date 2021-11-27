@@ -22,7 +22,7 @@ export const getAllByUser = async ({
 }) => {
   const seriesData = !categoryId
     ? await Series.findAll({
-        where: { 
+        where: {
           isPublished: true,
           serieName: {
             [Op.iLike]: `%${pattern?.toString().toLowerCase() ?? ""}%`,
@@ -31,9 +31,9 @@ export const getAllByUser = async ({
         order: [["createdAt", "DESC"]],
       })
     : await Series.findAll({
-        where: { 
-          categoryId, 
-          isPublished: true, 
+        where: {
+          categoryId,
+          isPublished: true,
           serieName: {
             [Op.iLike]: `%${pattern?.toString().toLowerCase() ?? ""}%`,
           }

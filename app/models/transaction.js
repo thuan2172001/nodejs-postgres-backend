@@ -21,6 +21,10 @@ const Transactions = Sql.define('transactions', {
     items: {
         type: DataTypes.ARRAY(DataTypes.UUID),
     },
+    bought_at: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW
+    }
 }, {
     // disable the modification of table names; By default, sequelize will automatically
     // transform all passed model names (first parameter of define) into plural.

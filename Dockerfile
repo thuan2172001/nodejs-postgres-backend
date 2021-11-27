@@ -21,6 +21,7 @@ RUN apk --no-cache add bash ghostscript graphicsmagick
 RUN yarn global add pm2 nodemon
 
 COPY ./.babelrc .
+COPY ./wait-for-it.sh .
 
 COPY --from=builder /app .
 

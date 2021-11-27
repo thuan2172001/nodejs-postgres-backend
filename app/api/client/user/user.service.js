@@ -129,7 +129,12 @@ export const updateCart = async ({ userId, cartItems }) => {
   return result;
 };
 
-export const getBookshelfData = async ({ userId, page = 1, limit = 1000, pattern = null }) => {
+export const getBookshelfData = async ({
+  userId,
+  page = 1,
+  limit = 1000,
+  pattern = null,
+}) => {
   const user = await Users.findOne({ where: { _id: userId } });
 
   if (!user) throw new Error("USER.USER_NOT_FOUND");
@@ -244,7 +249,6 @@ export const getFavoriteEpisodes = async ({
             alreadyLiked: true,
           });
         }
-        
       })
     );
   } else {
@@ -400,7 +404,12 @@ export const editUserStatus = async ({ authId, userId, type }) => {
   return result;
 };
 
-export const getAllTransaction = async ({ authId, userId , page = 1, limit = 1000 }) => {
+export const getAllTransaction = async ({
+  authId,
+  userId,
+  page = 1,
+  limit = 1000,
+}) => {
   const creator = await Creators.findOne({ where: { _id: authId } });
 
   if (!userId) throw new Error("USER.TRANSACTION.USERID_IS_REQUIRED");
