@@ -416,14 +416,14 @@ export const getAllTransaction = async ({
 
   const user = await Users.findOne({ where: { _id: userId } });
 
-  if (!user) throw new Error("USER.TRANSACTION.USER_NOT_FOUND");
+  if (!creator && !user) throw new Error("USER.TRANSACTION.USER_NOT_FOUND");
 
   if (!creator && authId !== userId)
     throw new Error("USER.TRANSACTION.DONT_HAVE_PERMISSION");
 
-  const transactions = await Transactions.findAll({
+  const transactions = user ? await Transactions.findAll({
     userId,
-  });
+  }) : await Transactions.findAll();
 
   const data = await Promise.all(
     transactions.map(async ({ transactionId, paymentId, value, items }) => {
@@ -432,9 +432,13 @@ export const getAllTransaction = async ({
       });
 
       if(!payment) return null;
+
+      const boughtUser = await Users.findOne({where: { _id: payment.userId }})
+
       return {
         transactionId,
         payment: payment.card,
+        user: {username: boughtUser.username, fullName: boughtUser.fullName},
         value,
         items,
       };
