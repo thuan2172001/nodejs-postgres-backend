@@ -50,6 +50,8 @@ export const editInfo = async ({
 
   if (!creator) throw new Error("CREATOR.CREATOR_NOT_FOUND");
 
+  console.log({mediaLinks});
+
   const status = await creator.update({
     fullName: shopName,
     avatar: avatar,

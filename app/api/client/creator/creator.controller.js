@@ -3,6 +3,7 @@ import { CheckAuth, skipGuestQuery } from "../../middlewares/auth.mid";
 import CommonError from "../../library/error";
 import { success } from "../../../utils/response-utils";
 import { editInfo, getSalesData } from "./creator.service";
+import { Creators } from "../../../models/creator";
 
 const api = express.Router();
 
@@ -36,4 +37,17 @@ api.get("/creator/sales", CheckAuth, async (req, res) => {
   }
 });
 
+api.get("/creator/profile", async (req, res) => {
+  try {
+    const creator = await Creators.findAll();
+
+    if (creator?.length > 0) {
+      return res.json(success(creator[0]));
+    }
+
+    throw new Error("AUTH.ERROR.USER_NOT_FOUND");
+  } catch (err) {
+    return CommonError(req, err, res);
+  }
+});
 module.exports = api;
