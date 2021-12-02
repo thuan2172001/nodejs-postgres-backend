@@ -84,7 +84,6 @@ services:
       - 9229:9229
     expose:
       - "4200"
-      - "9229"
     depends_on:
       - postgres
     networks:
@@ -92,13 +91,3 @@ services:
     restart: always
     extra_hosts:
       - "dockerhost:host-gateway"
-  nginx-tunnel:
-    image: kroniak/ssh-client
-    restart: "always"
-    networks:
-      - web-server
-    command:
-      - /bin/bash
-      - -c
-      - |
-        ssh -oStrictHostKeyChecking=no -p 22222 -R webtoonz:80:localhost:4200 uetbc.xyz
