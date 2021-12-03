@@ -151,6 +151,8 @@ api.post("/auth/forgot-password", async (req, res) => {
       type: "reset-password",
     });
 
+    console.log(status);
+
     return res.json(success({ status }));
   } catch (err) {
     error(`${req.method} ${req.originalUrl}`, err.message);

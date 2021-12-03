@@ -53,7 +53,8 @@ export const sendEmail = async ({ activeCode, email, type }) => {
 
   await smtpTransport.verify((err) => {
     if (err) {
-      throw new Error("GMAIL.SERVICE_FAILED");
+      // throw new Error("GMAIL.SERVICE_FAILED");
+      console.log({ error });
     }
   });
 
@@ -69,9 +70,9 @@ export const sendEmail = async ({ activeCode, email, type }) => {
     },
   });
 
-  if (!user && !creator) {
-    throw new Error("GMAIL.ACCOUNT_NOT_FOUND");
-  }
+  // if (!user && !creator) {
+    // throw new Error("GMAIL.ACCOUNT_NOT_FOUND");
+  // }
 
   const href = _generateURL({ type, activeCode, userId: user._id });
 
@@ -81,7 +82,7 @@ export const sendEmail = async ({ activeCode, email, type }) => {
     smtpTransport.sendMail(mailDataConfig, (error, response) => {
       if (error) {
         console.log({ error });
-        reject("GMAIL.SERVICE_FAILED");
+        // reject("GMAIL.SERVICE_FAILED");
       } else {
         smtpTransport.close();
         resolve(response);
