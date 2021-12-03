@@ -76,6 +76,20 @@ export const editEpisodeStatus = async ({ episodeId, userId, type }) => {
     return result;
 }
 
+export const deleteEpisode = async ({ creatorId, episodeId }) => {
+    const creator = await Creators.findOne({ where: { _id: creatorId } });
+
+    if (!creator) throw new Error('EPISODE.EDIT_EPISODE.CREATOR_NOT_FOUND');
+
+    const episode = await Episodes.findOne({ where: { episodeId } });
+
+    if (!episode) throw new Error('EPISODE.EDIT_EPISODE.EPISODE_NOT_FOUND');
+
+    const result = await episode.destroy();
+
+    return result;
+}
+
 export const getFavorEpisodes = async ({ userId }) => {
     const user = await Users.findOne({ where: { _id: userId } })
 

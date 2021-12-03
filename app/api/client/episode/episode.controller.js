@@ -4,7 +4,7 @@ import CommonError from '../../library/error';
 import {
     success,
 } from '../../../utils/response-utils';
-import { getById, editEpisodeStatus, getFavorEpisodes, createEpisode, editEpisode } from "./episode.service";
+import { getById, editEpisodeStatus, getFavorEpisodes, createEpisode, editEpisode, deleteEpisode } from "./episode.service";
 
 const api = express.Router();
 
@@ -91,5 +91,20 @@ api.put('/episode/:episodeId', CheckAuth, async (req, res) => {
     }
 });
 
+api.delete('/episode/:episodeId', CheckAuth, async (req, res) => {
+    try {
+        const creatorId = req.userInfo && req.userInfo._id ? req.userInfo._id : '';
+        const { episodeId } = req.params;
+        const result = await deleteEpisode({
+            creatorId,
+            episodeId,
+        })
+        return res.json(success(result));
+    } catch (err) {
+        console.log(err.message)
+        console.log(err.stack)
+        return CommonError(req, err, res);
+    }
+});
 
 module.exports = api;

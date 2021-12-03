@@ -18,17 +18,36 @@ export const getSignedUrl = async ({
 
   if (!episode) throw new Error("READ.EPISODE_NOT_FOUND");
 
-  const bookshelf = await Bookshelves.findOne({ where: { userId } });
-
-  const bookshelfItems = bookshelf?.dataValues?.bookshelfItems || [];
-
   const episodeData = episode.dataValues;
 
   const serieId = episodeData.serieId;
 
   const serie = await Series.findOne({ where: { serieId } });
 
+  const creator = await Creators.findOne({ where: { _id: userId } });
+
+  let signedUrl = [];
+
   if (!serie) throw new Error("READ.SERIE_NOT_FOUND");
+
+  if (creator) {
+    for (let i = fromPage; i <= endPage; i++) {
+      signedUrl.push(S3.getSignedUrl(`${episode.key}/${i}.png`));
+    }
+
+    return {
+      signedUrl,
+      episode: {
+        ...episodeData,
+        isLocked: false,
+      },
+    };
+  }
+
+  const bookshelf =
+    episode.price > 0 ? await Bookshelves.findOne({ where: { userId } }) : null;
+
+  const bookshelfItems = bookshelf?.dataValues?.bookshelfItems || [];
 
   const episodePrice = episodeData?.price || 0;
 
@@ -38,8 +57,6 @@ export const getSignedUrl = async ({
         ? false
         : true
       : false;
-
-  let signedUrl = [];
 
   if (!isLocked) {
     for (let i = fromPage; i <= endPage; i++) {
@@ -63,14 +80,19 @@ export const getSerie = async ({ userId, serieId }) => {
 
   const episodeList = await Episodes.findAll({ where: { serieId } });
 
-  const bookshelf = await Bookshelves.findOne({ where: { userId } });
+  const bookshelf = userId
+    ? await Bookshelves.findOne({ where: { userId } })
+    : null;
 
   const bookshelfItems = bookshelf ? bookshelf.dataValues?.bookshelfItems : [];
 
   const likes = (await Likes.findAll({ where: { serieId } })) || [];
 
-  const alreadyLiked =
-    (await Likes.findOne({ where: { userId, serieId } })) || null;
+  let alreadyLiked = null;
+
+  if (userId) {
+    alreadyLiked = await Likes.findOne({ where: { userId, serieId } });
+  }
 
   const episodesData = await Promise.all(
     episodeList.map(
@@ -103,6 +125,7 @@ export const getSerie = async ({ userId, serieId }) => {
 };
 
 export const getSettingRead = async ({ userId }) => {
+  if (!userId) return null;
   const user = await Users.findOne({
     where: {
       _id: userId,
@@ -121,6 +144,7 @@ export const getSettingRead = async ({ userId }) => {
 };
 
 export const updateSettingRead = async ({ userId, settingRead }) => {
+  if (!userId) return null;
   const user = await Users.findOne({
     where: {
       _id: userId,

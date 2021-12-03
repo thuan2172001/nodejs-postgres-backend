@@ -1,4 +1,4 @@
-version: '3.3'
+version: "3.3"
 networks:
   web-server:
     name: web-server
@@ -45,10 +45,10 @@ services:
       - |
         ./wait-for-it.sh postgres:${PG_PORT}
         yarn start:nodemon
-    # volumes:
-    #   - ../..:/app
-    #   - /app/.env
-    #   - /app/node_modules
+    volumes:
+      - ../..:/app
+      - /app/.env
+      - /app/node_modules
     environment:
       - PROJECT_NAME
       - SERVER_SECRET
