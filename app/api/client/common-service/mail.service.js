@@ -54,7 +54,7 @@ export const sendEmail = async ({ activeCode, email, type }) => {
   await smtpTransport.verify((err) => {
     if (err) {
       // throw new Error("GMAIL.SERVICE_FAILED");
-      console.log({ error });
+      console.log({ err });
     }
   });
 

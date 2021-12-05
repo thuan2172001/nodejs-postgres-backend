@@ -11,10 +11,10 @@ services:
       POSTGRES_DB: ${PG_DB}
       POSTGRES_PORT: ${PG_PORT}
     ports:
-      - 5432:5432
-    # expose:
-      # - "5444" # Publishes 5433 to other containers but NOT to host machine
-    # command: -p 5444
+      - 5444:5444
+    expose:
+      - "5444" # Publishes 5433 to other containers but NOT to host machine
+    command: -p 5444
     # needed because the postgres container does not provide a healthcheck
     # options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     networks:
@@ -44,11 +44,11 @@ services:
       - -c
       - |
         ./wait-for-it.sh postgres:${PG_PORT}
-        yarn start
+        yarn start:nodemon
     volumes:
-      - ../..:/app
-      - /app/.env
-      - /app/node_modules
+    #- ../..:/app
+    #   - /app/.env
+    #   - /app/node_modules
     environment:
       - PROJECT_NAME
       - SERVER_SECRET
@@ -87,4 +87,8 @@ services:
       - web-server
     restart: always
     extra_hosts:
+<<<<<<< Updated upstream
       - "dockerhost:host-gateway"
+=======
+      - "dockerhost:host-gateway"
+>>>>>>> Stashed changes

@@ -24,13 +24,14 @@ export const getSignedUrl = async ({
 
   const serie = await Series.findOne({ where: { serieId } });
 
-  const creator = await Creators.findOne({ where: { _id: userId } });
+  const creator = userId ? await Creators.findOne({ where: { _id: userId } }) : null;
 
   let signedUrl = [];
 
   if (!serie) throw new Error("READ.SERIE_NOT_FOUND");
+  const isFree = episode?.dataValues?.price <= 0;
 
-  if (creator) {
+  if (creator || isFree) {
     for (let i = fromPage; i <= endPage; i++) {
       signedUrl.push(S3.getSignedUrl(`${episode.key}/${i}.png`));
     }

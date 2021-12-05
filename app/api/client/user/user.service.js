@@ -422,7 +422,7 @@ export const getAllTransaction = async ({
     throw new Error("USER.TRANSACTION.DONT_HAVE_PERMISSION");
 
   const transactions = user ? await Transactions.findAll({
-    userId,
+    where: { userId },
   }) : await Transactions.findAll();
 
   const data = await Promise.all(
