@@ -119,7 +119,7 @@ api.put("/auth/password", CheckAuth, async (req, res) => {
     });
 
     if (creator) {
-      const statusCode = await Users.update(
+      const statusCode = await Creators.update(
         { publicKey, encryptedPrivateKey },
         { where: { _id: userId } }
       );
