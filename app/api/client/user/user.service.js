@@ -151,6 +151,7 @@ export const getBookshelfData = async ({
     episodesId.map(async (episodeId) => {
       if (episodeId) {
         const episodeData = await Episodes.findOne({ where: { episodeId } });
+        if (!episodeData) return;
         const likes = await Likes.findAll({ where: { episodeId } });
         const alreadyLiked = await Likes.findOne({
           where: { episodeId, userId },
@@ -203,6 +204,7 @@ export const getFavoriteEpisodes = async ({
       likes.map(async (like) => {
         const episodeId = like.episodeId;
         const episodeData = await Episodes.findOne({ where: { episodeId } });
+        if (!episodeData) return;
         const likes = await Likes.findAll({ where: { episodeId } });
         const episodeDataValue = episodeData.dataValues;
         if (pattern) {
