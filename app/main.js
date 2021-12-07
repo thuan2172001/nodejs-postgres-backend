@@ -60,8 +60,6 @@ module.exports = () => {
 		app.use(bodyParser.urlencoded({ extended: false }));
 		app.use(cookieParser());
 		app.use(API_PREFIX, require('./api'));
-		app.use('/mobile/build', express.static(`${__dirname}/../mobile/build`));
-		app.use('/uploads', express.static(`${__dirname}/../uploads`));
 		app.use(express.static(`${__dirname}/../deploy/build`));
 		app.get('*', (req, res) => {
 			res.sendFile(path.join(__dirname, '../deploy/build', 'index.html'));

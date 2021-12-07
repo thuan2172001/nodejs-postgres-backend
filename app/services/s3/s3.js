@@ -4,11 +4,9 @@ const {
 	AWS_ACCESS_KEY_ID,
 	AWS_BUCKET_NAME,
 	IMAGE,
-	WATCH,
 	READ,
 	IMAGE_SIZE,
 	READ_SIZE,
-	WATCH_SIZE,
 } = require('../../environment');
 const fs = require('fs');
 const uuid = require('uuid');
@@ -16,7 +14,6 @@ const multer = require('multer');
 const multerS3 = require('../../utils/multer-s3-transform');
 const path = require('path');
 const { createSpliter, splitEvent } = require('../../utils/pdf2pic');
-const { S3 } = require('aws-sdk');
 AWS.config.update({
 	accessKeyId: AWS_ACCESS_KEY_ID,
 	secretAccessKey: AWS_SECRET_ACCESS_KEY,
@@ -25,28 +22,15 @@ AWS.config.update({
 
 const extension_allowed = {
 	image: IMAGE,
-	watch: WATCH,
 	read: READ,
-	all: [...IMAGE, ...WATCH, ...READ],
+	all: [...IMAGE, ...READ],
 };
 const size_allowed = {
 	image: IMAGE_SIZE,
-	watch: WATCH_SIZE,
 	read: READ_SIZE,
 };
 
 const s3 = new AWS.S3();
-
-const createBucket = () =>
-	new Promise((res, rej) => {
-		const params = {
-			Bucket: AWS_BUCKET_NAME,
-		};
-		s3.createBucket(params, (err, data) => {
-			if (err) rej(err);
-			res(data);
-		});
-	});
 
 const fileFilter = (req, file, cb) => {
 	try {
@@ -137,9 +121,6 @@ const upload = multer({
 
 				if (extension_allowed.read.indexOf(extName) !== -1) {
 					prefix = 'read';
-				}
-				if (extension_allowed.watch.indexOf(extName) !== -1) {
-					prefix = 'watch';
 				}
 				if (extension_allowed.image.indexOf(extName) !== -1) {
 					prefix = 'image';
@@ -261,8 +242,5 @@ module.exports = {
 	uploadBase64,
 	deleteListByPrefix,
 	getListByPrefix,
-	createBucket,
-	extension_allowed,
-	size_allowed,
 	uploadFile,
 };

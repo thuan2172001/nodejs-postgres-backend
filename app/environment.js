@@ -32,9 +32,7 @@ export const { AWS_ACCESS_KEY_ID } = process.env;
 export const { AWS_SECRET_ACCESS_KEY } = process.env;
 
 export const IMAGE = ['.svg', '.png', '.jpg', '.jpeg'];
-export const WATCH = ['.mp4', '.mpeg4'];
 export const READ = ['.pdf'];
 
 export const IMAGE_SIZE = 10000000;
-export const WATCH_SIZE = 1000000000;
 export const READ_SIZE = 50000000;
