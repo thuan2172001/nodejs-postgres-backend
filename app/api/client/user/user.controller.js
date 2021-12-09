@@ -73,13 +73,14 @@ api.get("/user/cart", CheckAuth, async (req, res) => {
 api.get("/user/favor-data", CheckAuth, async (req, res) => {
   try {
     const userId = req.userInfo && req.userInfo._id ? req.userInfo._id : "";
-    const { type, page, limit, pattern } = req.query;
+    const { type, page, limit, pattern, category } = req.query;
     const results = await getFavoriteEpisodes({
       userId,
       type,
       page,
       limit,
       pattern,
+      category,
     });
 
     return res.json(success(results));
@@ -105,8 +106,8 @@ api.put("/user/cart", CheckAuth, async (req, res) => {
 api.get("/user/bookshelf-data", CheckAuth, async (req, res) => {
   try {
     const userId = req.userInfo && req.userInfo._id ? req.userInfo._id : "";
-    const { limit, page, pattern } = req.query;
-    const results = await getBookshelfData({ userId, limit, page, pattern });
+    const { limit, page, pattern, category } = req.query;
+    const results = await getBookshelfData({ userId, limit, page, pattern, category });
 
     return res.json(success(results));
   } catch (err) {

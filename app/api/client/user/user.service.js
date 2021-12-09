@@ -134,6 +134,7 @@ export const getBookshelfData = async ({
   page = 1,
   limit = 1000,
   pattern = null,
+  category = null,
 }) => {
   const user = await Users.findOne({ where: { _id: userId } });
 
@@ -152,6 +153,10 @@ export const getBookshelfData = async ({
       if (episodeId) {
         const episodeData = await Episodes.findOne({ where: { episodeId } });
         if (!episodeData) return;
+        const seriesData = await Series.findOne({
+          where: { serieId: episodeData.dataValues.serieId },
+        });
+        if (category && seriesData?.dataValues.categoryId !== category) return;
         const likes = await Likes.findAll({ where: { episodeId } });
         const alreadyLiked = await Likes.findOne({
           where: { episodeId, userId },
@@ -189,6 +194,7 @@ export const getFavoriteEpisodes = async ({
   page,
   limit,
   pattern = null,
+  category = null,
 }) => {
   const user = await Users.findOne({ where: { _id: userId } });
 
@@ -205,6 +211,10 @@ export const getFavoriteEpisodes = async ({
         const episodeId = like.episodeId;
         const episodeData = await Episodes.findOne({ where: { episodeId } });
         if (!episodeData) return;
+        const seriesData = await Series.findOne({
+          where: { serieId: episodeData.dataValues.serieId },
+        });
+        if (category && seriesData?.dataValues.categoryId !== category) return;
         const likes = await Likes.findAll({ where: { episodeId } });
         const episodeDataValue = episodeData.dataValues;
         if (pattern) {
@@ -423,9 +433,11 @@ export const getAllTransaction = async ({
   if (!creator && authId !== userId)
     throw new Error("USER.TRANSACTION.DONT_HAVE_PERMISSION");
 
-  const transactions = user ? await Transactions.findAll({
-    where: { userId },
-  }) : await Transactions.findAll();
+  const transactions = user
+    ? await Transactions.findAll({
+        where: { userId },
+      })
+    : await Transactions.findAll();
 
   const data = await Promise.all(
     transactions.map(async ({ transactionId, paymentId, value, items }) => {
@@ -433,21 +445,23 @@ export const getAllTransaction = async ({
         where: { paymentId },
       });
 
-      if(!payment) return null;
+      if (!payment) return null;
 
-      const boughtUser = await Users.findOne({where: { _id: payment.userId }})
+      const boughtUser = await Users.findOne({
+        where: { _id: payment.userId },
+      });
 
       return {
         transactionId,
         payment: payment.card,
-        user: {username: boughtUser.username, fullName: boughtUser.fullName},
+        user: { username: boughtUser.username, fullName: boughtUser.fullName },
         value,
         items,
       };
     })
   );
 
-  const result = data.filter(ele => ele !== null);
+  const result = data.filter((ele) => ele !== null);
 
   return {
     data: getPagination({ array: result, page, limit }),
