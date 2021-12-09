@@ -152,11 +152,11 @@ export const getBookshelfData = async ({
     episodesId.map(async (episodeId) => {
       if (episodeId) {
         const episodeData = await Episodes.findOne({ where: { episodeId } });
-        if (!episodeData) return;
+        if (!episodeData) return null;
         const seriesData = await Series.findOne({
           where: { serieId: episodeData.dataValues.serieId },
         });
-        if (category && seriesData?.dataValues.categoryId !== category) return;
+        if (category !== "all" && seriesData.dataValues.categoryId !== category) return null;
         const likes = await Likes.findAll({ where: { episodeId } });
         const alreadyLiked = await Likes.findOne({
           where: { episodeId, userId },
@@ -210,11 +210,11 @@ export const getFavoriteEpisodes = async ({
       likes.map(async (like) => {
         const episodeId = like.episodeId;
         const episodeData = await Episodes.findOne({ where: { episodeId } });
-        if (!episodeData) return;
+        if (!episodeData) return null;
         const seriesData = await Series.findOne({
           where: { serieId: episodeData.dataValues.serieId },
         });
-        if (category && seriesData?.dataValues.categoryId !== category) return;
+        if (category !== 'all' && seriesData.dataValues.categoryId !== category) return null;
         const likes = await Likes.findAll({ where: { episodeId } });
         const episodeDataValue = episodeData.dataValues;
         if (pattern) {
@@ -245,6 +245,7 @@ export const getFavoriteEpisodes = async ({
         const serieData = await Series.findOne({ where: { serieId } });
         const likes = await Likes.findAll({ where: { serieId } });
         const serieDataValue = serieData.dataValues;
+        if (category !== 'all' && serieDataValue.categoryId !== category) return null;
         if (pattern) {
           const seriesName = serieDataValue.serieName;
           if (seriesName.toLowerCase().includes(pattern.toLowerCase())) {
