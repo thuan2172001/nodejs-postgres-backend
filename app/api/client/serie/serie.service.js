@@ -26,7 +26,7 @@ export const getAllByUser = async ({
           isPublished: true,
           serieName: {
             [Op.iLike]: `%${pattern?.toString().toLowerCase() ?? ""}%`,
-          }
+          },
         },
         order: [["createdAt", "DESC"]],
       })
@@ -36,8 +36,8 @@ export const getAllByUser = async ({
           isPublished: true,
           serieName: {
             [Op.iLike]: `%${pattern?.toString().toLowerCase() ?? ""}%`,
-          }
-       },
+          },
+        },
         order: [["createdAt", "DESC"]],
       });
 
@@ -129,18 +129,36 @@ export const getById = async ({
 
   if (!serie) throw new Error("SERIE.SERIE_NOT_FOUND");
 
+  let creator = null;
+
+  if (userId) {
+    creator = await Creators.findOne({ where: { _id: userId } });
+  }
+
   const categoryId = serie.categoryId;
 
   const category = await Categories.findOne({ where: { categoryId } });
 
   if (!category) throw new Error("SERIE.CATEGORY_NOT_FOUND");
 
-  const episodesData = await Episodes.findAll({ where: { 
-    serieId: serieId, 
-    name: {
-      [Op.iLike]: `%${pattern?.toString().toLowerCase() ?? ""}%`
-    }}
-  });
+  const episodesData = creator
+    ? await Episodes.findAll({
+        where: {
+          serieId: serieId,
+          name: {
+            [Op.iLike]: `%${pattern?.toString().toLowerCase() ?? ""}%`,
+          },
+        },
+      })
+    : await Episodes.findAll({
+        where: {
+          serieId: serieId,
+          name: {
+            [Op.iLike]: `%${pattern?.toString().toLowerCase() ?? ""}%`,
+          },
+        },
+        isPublished: true,
+      });
 
   const likes = await Likes.findAll({ where: { serieId } });
 
