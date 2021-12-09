@@ -151,28 +151,29 @@ export const getBookshelfData = async ({
     episodesId.map(async (episodeId) => {
       if (episodeId) {
         const episodeData = await Episodes.findOne({ where: { episodeId } });
-        if (!episodeData) return;
-        const likes = await Likes.findAll({ where: { episodeId } });
-        const alreadyLiked = await Likes.findOne({
-          where: { episodeId, userId },
-        });
-        const episodeDataValue = episodeData.dataValues;
-        if (pattern) {
-          const episodeName = episodeDataValue.name;
-          if (episodeName.toLowerCase().includes(pattern.toLowerCase())) {
+        if (episodeData) {
+          const likes = await Likes.findAll({ where: { episodeId } });
+          const alreadyLiked = await Likes.findOne({
+            where: { episodeId, userId },
+          });
+          const episodeDataValue = episodeData.dataValues;
+          if (pattern) {
+            const episodeName = episodeDataValue.name;
+            if (episodeName.toLowerCase().includes(pattern.toLowerCase())) {
+              result.push({
+                ...episodeDataValue,
+                totalLikes: episodeData.likeInit + likes.length,
+                alreadyLiked: alreadyLiked !== null,
+              });
+            }
+          } else {
             result.push({
               ...episodeDataValue,
               totalLikes: episodeData.likeInit + likes.length,
               alreadyLiked: alreadyLiked !== null,
             });
           }
-        } else {
-          result.push({
-            ...episodeDataValue,
-            totalLikes: episodeData.likeInit + likes.length,
-            alreadyLiked: alreadyLiked !== null,
-          });
-        }
+	}
       }
     })
   );
@@ -204,7 +205,7 @@ export const getFavoriteEpisodes = async ({
       likes.map(async (like) => {
         const episodeId = like.episodeId;
         const episodeData = await Episodes.findOne({ where: { episodeId } });
-        if (!episodeData) return;
+        if (episodeData) {
         const likes = await Likes.findAll({ where: { episodeId } });
         const episodeDataValue = episodeData.dataValues;
         if (pattern) {
@@ -223,6 +224,7 @@ export const getFavoriteEpisodes = async ({
             alreadyLiked: true,
           });
         }
+	}
       })
     );
   } else if (type == "SERIES") {
