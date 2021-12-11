@@ -120,10 +120,10 @@ api.put("/serie/:serieId", CheckAuth, async (req, res) => {
 api.delete('/serie/:serieId', CheckAuth, async (req, res) => {
   try {
       const creatorId = req.userInfo && req.userInfo._id ? req.userInfo._id : '';
-      const { seriesId } = req.params;
+      const { serieId } = req.params;
       const result = await deleteSeries({
           creatorId,
-          seriesId,
+          serieId,
       })
       return res.json(success(result));
   } catch (err) {

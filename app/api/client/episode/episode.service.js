@@ -5,6 +5,7 @@ import { Likes } from "../../../models/like";
 import { Bookshelves } from "../../../models/bookshelf";
 import { Creators } from "../../../models/creator";
 import { Users } from "../../../models/user";
+import { Op } from "sequelize";
 
 const { DataTypes } = require('sequelize');
 const uuidv1 = require('uuidv1');
@@ -85,7 +86,13 @@ export const deleteEpisode = async ({ creatorId, episodeId }) => {
 
     if (!episode) throw new Error('EPISODE.EDIT_EPISODE.EPISODE_NOT_FOUND');
 
-    const episodeInBookshelf = await Bookshelves.findAll({where: {episodeId }});
+    const episodeInBookshelf = await Bookshelves.findAll({
+        where: {
+            bookshelfItems: {
+                [Op.contains]: [episodeId],
+            } 
+        }
+    });
 
     if (episodeInBookshelf.length > 0) {
         throw new Error('EPISODE.DELETE_EPISODE.EPISODE_IN_BOOKSHELVES');
