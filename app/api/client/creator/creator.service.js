@@ -41,25 +41,29 @@ export const getSalesData = async ({ creatorId }) => {
 export const exportTransaction = async ({ creatorId }) => {
   const creator = await Creators.findOne({ where: { _id: creatorId } });
 
-  const months = Array.from(Array(12).keys());
+  // const months = Array.from(Array(12).keys());
 
   if (!creator) throw new Error("CREATOR.CREATOR_NOT_FOUND");
 
-  let data = [];
+  // let data = [];
 
-  await Promise.each(months, async (month) => {
-    const monthTransactions = await Sql.query(
-      `SELECT * FROM transactions where extract(month from "bought_at") = ${
-        month + 1
-      }`,
-      {
-        type: QueryTypes.SELECT,
-      }
-    );
-    data.push(monthTransactions);
-  });
+  const allTransactions = await Transactions.findAll();
 
-  return { data };
+  return allTransactions
+
+  // await Promise.each(months, async (month) => {
+  //   const monthTransactions = await Sql.query(
+  //     `SELECT * FROM transactions where extract(month from "bought_at") = ${
+  //       month + 1
+  //     }`,
+  //     {
+  //       type: QueryTypes.SELECT,
+  //     }
+  //   );
+  //   data.push(monthTransactions);
+  // });
+
+  // return { data };
 };
 
 export const editInfo = async ({
