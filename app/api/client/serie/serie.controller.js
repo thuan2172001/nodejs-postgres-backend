@@ -10,6 +10,7 @@ import {
   getAllByUser,
   getAllByCreator,
   getByIdAndStatus,
+  deleteSeries,
 } from "./serie.service";
 
 const api = express.Router();
@@ -113,6 +114,22 @@ api.put("/serie/:serieId", CheckAuth, async (req, res) => {
     return res.json(success(result));
   } catch (err) {
     return CommonError(req, err, res);
+  }
+});
+
+api.delete('/serie/:serieId', CheckAuth, async (req, res) => {
+  try {
+      const creatorId = req.userInfo && req.userInfo._id ? req.userInfo._id : '';
+      const { seriesId } = req.params;
+      const result = await deleteSeries({
+          creatorId,
+          seriesId,
+      })
+      return res.json(success(result));
+  } catch (err) {
+      console.log(err.message)
+      console.log(err.stack)
+      return CommonError(req, err, res);
   }
 });
 

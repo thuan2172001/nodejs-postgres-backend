@@ -85,6 +85,12 @@ export const deleteEpisode = async ({ creatorId, episodeId }) => {
 
     if (!episode) throw new Error('EPISODE.EDIT_EPISODE.EPISODE_NOT_FOUND');
 
+    const episodeInBookshelf = await Bookshelves.findAll({where: {episodeId }});
+
+    if (episodeInBookshelf.length > 0) {
+        throw new Error('EPISODE.DELETE_EPISODE.EPISODE_IN_BOOKSHELVES');
+    }
+
     const result = await episode.destroy();
 
     return result;

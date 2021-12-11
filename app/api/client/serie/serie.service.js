@@ -118,6 +118,26 @@ export const getAllByCreator = async ({
   };
 };
 
+export const deleteSeries = async ({ creatorId, serieId }) => {
+  const creator = await Creators.findOne({ where: { _id: creatorId } });
+
+  if (!creator) throw new Error("SERIES.DELETE_SERIES.CREATOR_NOT_FOUND");
+
+  const serie = await Series.findOne({ where: { serieId } });
+
+  if (!serie) throw new Error("SERIES.DELETE_SERIES.SERIES_NOT_FOUND");
+
+  const episodeInSeries = await Episodes.findAll({ where: { serieId } });
+
+  if (episodeInSeries.length > 0) {
+    throw new Error("SERIES.DELETE_SERIES.SERIES_HAVE_EPISODE");
+  }
+
+  const result = await serie.destroy();
+
+  return result;
+};
+
 export const getById = async ({
   userId = null,
   serieId,
@@ -144,7 +164,7 @@ export const getById = async ({
   let episodesData = [];
 
   if (creator) {
-    console.log("creator call")
+    console.log("creator call");
     episodesData = await Episodes.findAll({
       where: {
         serieId: serieId,
@@ -154,7 +174,7 @@ export const getById = async ({
       },
     });
   } else {
-    console.log("not creator call")
+    console.log("not creator call");
     episodesData = await Episodes.findAll({
       where: {
         serieId: serieId,
