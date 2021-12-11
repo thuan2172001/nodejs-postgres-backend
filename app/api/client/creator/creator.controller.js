@@ -2,7 +2,7 @@ import express from "express";
 import { CheckAuth, skipGuestQuery } from "../../middlewares/auth.mid";
 import CommonError from "../../library/error";
 import { success } from "../../../utils/response-utils";
-import { editInfo, getSalesData } from "./creator.service";
+import { editInfo, getSalesData, exportTransaction } from "./creator.service";
 import { Creators } from "../../../models/creator";
 
 const api = express.Router();
@@ -50,4 +50,19 @@ api.get("/creator/profile", async (req, res) => {
     return CommonError(req, err, res);
   }
 });
+
+api.get("/creator/export-transaction", CheckAuth, async (req, res) => {
+  try {
+    const creatorId = req.userInfo && req.userInfo._id ? req.userInfo._id : "";
+    const transactionData = await exportTransaction({
+      creatorId,
+    });
+
+    return res.json(success(transactionData));
+  } catch (err) {
+    console.log(err);
+    return CommonError(req, err, res);
+  }
+});
+
 module.exports = api;
