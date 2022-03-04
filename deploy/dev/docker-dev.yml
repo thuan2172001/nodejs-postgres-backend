@@ -12,6 +12,8 @@ services:
       POSTGRES_PORT: ${PG_PORT}
     ports:
       - 5432:5432
+    # volumes:
+    #   - ../../postgres-data:/var/lib/postgresql/data
     # expose:
       # - "5444" # Publishes 5433 to other containers but NOT to host machine
     # command: -p 5444
@@ -45,10 +47,6 @@ services:
       - |
         ./wait-for-it.sh postgres:${PG_PORT}
         yarn start
-    volumes:
-      - ../..:/app
-      - /app/.env
-      - /app/node_modules
     environment:
       - PROJECT_NAME
       - SERVER_SECRET
