@@ -4,6 +4,8 @@
 
 /.idea
 /.vscode
+./.git
+./about
 
 # assets
 docker-dev.yml.save.*

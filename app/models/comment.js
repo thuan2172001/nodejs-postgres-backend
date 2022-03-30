@@ -1,10 +1,15 @@
 import { Sql } from '../database';
-import { Series } from '../models/serie';
-import { Episodes } from '../models/episode';
+import { Series } from './serie';
+import { Episodes } from './episode';
 
 const { DataTypes } = require('sequelize');
 
-const Likes = Sql.define('likes', {
+const Comments = Sql.define('comments', {
+    commentId: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV1,
+        primaryKey: true,
+    },
     userId: {
         type: DataTypes.UUID,
         allowNull: true,
@@ -17,6 +22,10 @@ const Likes = Sql.define('likes', {
         type: DataTypes.UUID,
         allowNull: true,
     },
+    description: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+    },
 }, {
     // disable the modification of table names; By default, sequelize will automatically
     // transform all passed model names (first parameter of define) into plural.
@@ -24,13 +33,13 @@ const Likes = Sql.define('likes', {
     freezeTableName: true,
 });
 
-Likes.belongsTo(Episodes, {
+Comments.belongsTo(Episodes, {
     foreignKey: 'episodeId',
     onDelete: "CASCADE",
     as: "createdBy",
 })
 
-Episodes.hasMany(Likes, { foreignKey: 'episodeId' })
-Series.hasMany(Likes, { foreignKey: 'serieId' })
+Episodes.hasMany(Comments, { foreignKey: 'episodeId' })
+Series.hasMany(Comments, { foreignKey: 'serieId' })
 
-module.exports.Likes = Likes;
+module.exports.Comments = Comments;

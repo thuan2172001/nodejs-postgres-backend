@@ -4,6 +4,7 @@ import { generateCarts } from './seed-cart';
 import { generateCategory } from './seed-category';
 import { generateEpisode } from './seed-episode';
 import { generateLikes } from './seed-like';
+import { generateComments } from './seed-comment';
 import { generateSerie } from './seed-serie';
 import { generateUser } from './seed-user';
 import { generateBookshelf } from "./seed-bookshelf";
@@ -27,6 +28,7 @@ const _seed = async () => {
     await generateCode();
     await generateCarts();
     await generateLikes();
+    await generateComments();
     await generateBookshelf();
     await generateTransaction();
 };
