@@ -42,9 +42,17 @@ export const getById = async ({ userId, episodeId }) => {
         }
     }
 
+    const creatorInfo = await Creators.findOne({
+        where: {
+            _id: serie.creatorId
+        },
+        attributes: ["fullName", "description", "sns"]
+    });
+
     const result = {
         data: {
             ...episode.dataValues,
+            creatorInfo,
             category,
             serie,
             likes: (likes.length || 0) + episode.dataValues.likeInit,

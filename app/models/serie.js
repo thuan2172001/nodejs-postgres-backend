@@ -28,6 +28,9 @@ const Series = Sql.define('series', {
     isPublished: {
         type: DataTypes.BOOLEAN,
     },
+    creatorId: {
+        type: DataTypes.STRING,
+    }
 }, {
     // disable the modification of table names; By default, sequelize will automatically
     // transform all passed model names (first parameter of define) into plural.

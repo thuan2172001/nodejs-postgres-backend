@@ -5,6 +5,7 @@ import {
     success,
 } from '../../../utils/response-utils';
 import { getById, editEpisodeStatus, getFavorEpisodes, createEpisode, editEpisode, deleteEpisode } from "./episode.service";
+import { getEpisodeComment } from '../comment/comment.service';
 
 const api = express.Router();
 
@@ -37,6 +38,19 @@ api.get('/episode/:episodeId', skipGuestQuery(CheckAuth), async (req, res) => {
         const userId = req.userInfo && req.userInfo._id ? req.userInfo._id : '';
         const { episodeId } = req.params;
         const results = await getById({ userId, episodeId });
+
+        return res.json(success(results));
+    } catch (err) {
+        return CommonError(req, err, res);
+    }
+});
+
+api.get('/episode/:episodeId/comments', async (req, res) => {
+    try {
+        const { episodeId } = req.params;
+        const { offset, limit } = req.query;
+        console.log({ offset, limit })
+        const results = await getEpisodeComment({ episodeId, offset, limit });
 
         return res.json(success(results));
     } catch (err) {

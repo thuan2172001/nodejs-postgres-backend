@@ -29,6 +29,7 @@ export const generateEpisode = async () => {
                 price: field[header.indexOf('price')],
                 likeInit: field[header.indexOf('likeInit')],
                 isPublished: true,
+                soldQuantity: 0
             };
             dataSeed.push(item);
         });

@@ -58,3 +58,35 @@ export const deleteComment = async ({ userId, commentId }) => {
 
     return true;
 }
+
+export const getSeriesComment = async ({ serieId, offset, limit }) => {
+    const series = await Series.findOne({ where: { episodeId: episodeId } });
+    if (!series) throw new Error('COMMENT.SERIE_NOT_FOUND');
+
+    const commentInfos = await Comments.findAll({
+        where: {
+            serieId,
+        },
+        offset: offset,
+        limit: limit,
+        order: [["createdAt", "DESC"]],
+    })
+
+    return commentInfos;
+}
+
+export const getEpisodeComment = async ({ episodeId, offset, limit }) => {
+    const episode = await Episodes.findOne({ where: { episodeId: episodeId } });
+    if (!episode) throw new Error('COMMENT.EPISODE_NOT_FOUND');
+
+    const commentInfos = await Comments.findAll({
+        where: {
+            episodeId,
+        },
+        offset: offset,
+        limit: limit,
+        order: [["createdAt", "DESC"]]
+    })
+
+    return commentInfos;
+}

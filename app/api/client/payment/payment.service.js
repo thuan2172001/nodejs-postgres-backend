@@ -12,6 +12,7 @@ const { Bookshelves } = require("../../../models/bookshelf");
 const { Carts } = require("../../../models/cart");
 const { PaymentMethods } = require("../../../models/payment_method");
 const { Transactions } = require("../../../models/transaction");
+const { Episodes } = require("../../../models/episode");
 const { isValidString } = require("../../../utils/validate-utils");
 const uuidv1 = require("uuidv1");
 
@@ -136,6 +137,12 @@ export const checkoutOrder = async ({
 
   const bookshelfItems = bookshelf ? bookshelf.dataValues?.bookshelfItems : [];
 
+  const episodeInfos = await Episodes.findAll({
+    where: {
+      episodeId: bookshelfItems
+    }
+  })
+
   const newBookshelfItems = [...new Set([...bookshelfItems, ...cartList])];
 
   let result;
@@ -162,6 +169,13 @@ export const checkoutOrder = async ({
   const newCartItems = cartItems.filter((ele) => {
     return cartList.indexOf(ele) < 0;
   });
+
+  await Promise.all([
+    episodeInfos.map((e) => {
+      episodeInfos.soldQuantity++;
+      episodeInfos.save();
+    })
+  ])
 
   await Carts.update(
     { cartItems: newCartItems },

@@ -25,6 +25,7 @@ export const generateSerie = async () => {
                 cover: field[header.indexOf('cover')],
                 thumbnail: field[header.indexOf('thumbnail')],
                 isPublished: field[header.indexOf('isPublished')],
+                creatorId: "1c2347cc-160d-11ec-a238-cb22be0d8bab",
             };
             dataSeed.push(item);
         });
