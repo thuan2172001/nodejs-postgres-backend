@@ -46,7 +46,7 @@ export const getById = async ({ userId, episodeId }) => {
         where: {
             _id: serie.creatorId
         },
-        attributes: ["fullName", "description", "sns"]
+        attributes: ["fullName", "description", "sns", "avatar"]
     });
 
     const result = {

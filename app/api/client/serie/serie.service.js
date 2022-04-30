@@ -22,24 +22,24 @@ export const getAllByUser = async ({
 }) => {
   const seriesData = !categoryId
     ? await Series.findAll({
-        where: {
-          isPublished: true,
-          serieName: {
-            [Op.iLike]: `%${pattern?.toString().toLowerCase() ?? ""}%`,
-          },
+      where: {
+        isPublished: true,
+        serieName: {
+          [Op.iLike]: `%${pattern?.toString().toLowerCase() ?? ""}%`,
         },
-        order: [["createdAt", "DESC"]],
-      })
+      },
+      order: [["createdAt", "DESC"]],
+    })
     : await Series.findAll({
-        where: {
-          categoryId,
-          isPublished: true,
-          serieName: {
-            [Op.iLike]: `%${pattern?.toString().toLowerCase() ?? ""}%`,
-          },
+      where: {
+        categoryId,
+        isPublished: true,
+        serieName: {
+          [Op.iLike]: `%${pattern?.toString().toLowerCase() ?? ""}%`,
         },
-        order: [["createdAt", "DESC"]],
-      });
+      },
+      order: [["createdAt", "DESC"]],
+    });
 
   let results = [];
 
@@ -143,22 +143,22 @@ export const getById = async ({
 
   const episodesData = creator
     ? await Episodes.findAll({
-        where: {
-          serieId: serieId,
-          name: {
-            [Op.iLike]: `%${pattern?.toString().toLowerCase() ?? ""}%`,
-          },
+      where: {
+        serieId: serieId,
+        name: {
+          [Op.iLike]: `%${pattern?.toString().toLowerCase() ?? ""}%`,
         },
-      })
+      },
+    })
     : await Episodes.findAll({
-        where: {
-          serieId: serieId,
-          name: {
-            [Op.iLike]: `%${pattern?.toString().toLowerCase() ?? ""}%`,
-          },
+      where: {
+        serieId: serieId,
+        name: {
+          [Op.iLike]: `%${pattern?.toString().toLowerCase() ?? ""}%`,
         },
-        isPublished: true,
-      });
+      },
+      isPublished: true,
+    });
 
   const likes = await Likes.findAll({ where: { serieId } });
 
@@ -191,8 +191,17 @@ export const getById = async ({
     ? await Likes.findOne({ where: { userId, serieId } })
     : null;
 
+  const creatorInfo = await Creators.findOne({
+    where: {
+      _id: serie.creatorId
+    },
+    attributes: ["fullName", "description", "sns", "avatar"]
+  });
+
+
   const result = {
     ...serie.dataValues,
+    creatorInfo,
     category: category,
     totalEpisodes: episodes.length,
     episodes: getPagination({ array: episodes, page, limit }),
