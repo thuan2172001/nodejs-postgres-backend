@@ -6,7 +6,6 @@ import { Bookshelves } from "../../../models/bookshelf";
 import { Creators } from "../../../models/creator";
 import { Users } from "../../../models/user";
 import S3 from "../../../services/s3/s3";
-import { getById } from "../episode/episode.service";
 
 export const getSignedUrl = async ({
   episodeId,

@@ -102,7 +102,6 @@ const upload = multer({
 			}
 			return cb(null, null);
 		},
-
 		shouldSplit: function (req, file, cb) {
 			const extName = path.extname(file.originalname);
 			if (extName === '.pdf') return cb(null, true);

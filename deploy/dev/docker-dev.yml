@@ -46,7 +46,7 @@ services:
       - -c
       - |
         ./wait-for-it.sh postgres:${PG_PORT}
-        yarn start
+        yarn start:nodemon
     environment:
       - PROJECT_NAME
       - SERVER_SECRET

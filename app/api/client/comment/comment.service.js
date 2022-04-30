@@ -20,7 +20,7 @@ export const createComment = async ({ userId, episodeId = null, serieId = null, 
     if (serie && episode) throw new Error('COMMENT.SERIE_AND_EPISODE_INVALID');
 
     let result = await Comments.create({ userId, serieId, episodeId, description })
-    console.log({result})
+    console.log({ result })
 
     return result;
 }
@@ -36,7 +36,7 @@ export const editComment = async ({ userId, commentId, description = "" }) => {
     let result = await comment.update({
         description
     })
-    console.log({result})
+    console.log({ result })
 
     return result;
 }
@@ -51,7 +51,7 @@ export const deleteComment = async ({ userId, commentId }) => {
 
     try {
         let result = await comment.destroy();
-        console.log({result})
+        console.log({ result })
     } catch (err) {
         return false;
     }
@@ -88,5 +88,15 @@ export const getEpisodeComment = async ({ episodeId, offset, limit }) => {
         order: [["createdAt", "DESC"]]
     })
 
-    return commentInfos;
+    let res = await Promise.all(commentInfos.map(async (commentInfo) => {
+        let userInfo = await Users.findOne({
+            where: {
+                _id: commentInfo.userId
+            },
+            attributes: ["fullName", "role"]
+        })
+        return { ...commentInfo.dataValues, userInfo }
+    }));
+
+    return res;
 }
