@@ -1,5 +1,6 @@
 import { Series } from "../../../models/serie";
 import { Categories } from "../../../models/category";
+import { Comments } from "../../../models/comment";
 import { Users } from "../../../models/user";
 import { Sql } from "../../../database";
 import { Episodes } from "../../../models/episode";
@@ -46,8 +47,8 @@ export const getAllByUser = async ({
   if (!userId) {
     await Promise.all(
       seriesData.map(async (serieData) => {
-        let comments = await Comment.findAll({ where: { serieId: serieData.serieId } })
-        let likes = await Comment.findAll({ where: { serieId: serieData.serieId } })
+        let comments = await Comments.findAll({ where: { serieId: serieData.serieId } })
+        let likes = await Comments.findAll({ where: { serieId: serieData.serieId } })
         const creatorInfo = await Creators.findOne({
           where: {
             _id: serieData.creatorId
@@ -78,8 +79,8 @@ export const getAllByUser = async ({
           where: { serieId: serieData.serieId, userId },
         })) || null;
 
-      let comments = await Comment.findAll({ where: { serieId: serieData.serieId } })
-      let likes = await Comment.findAll({ where: { serieId: serieData.serieId } })
+      let comments = await Comments.findAll({ where: { serieId: serieData.serieId } })
+      let likes = await Comments.findAll({ where: { serieId: serieData.serieId } })
 
       const creatorInfo = await Creators.findOne({
         where: {
@@ -200,7 +201,7 @@ export const getById = async ({
 
   let episodes = [];
 
-  const comments = await Comment.findAll({ where: { serieId } })
+  const comments = await Comments.findAll({ where: { serieId } })
 
   if (!userId) {
     const creatorInfo = await Creators.findOne({
@@ -228,7 +229,7 @@ export const getById = async ({
           where: { episodeId: episodeData.episodeId, userId },
         })) || null;
 
-      const epComments = await Comment.findAll({
+      const epComments = await Comments.findAll({
         where: {
           episodeId: episodeData.episodeId
         }
