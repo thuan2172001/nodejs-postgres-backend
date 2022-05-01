@@ -43,11 +43,29 @@ export const getAllByUser = async ({
 
   let results = [];
 
-  if (!userId)
+  if (!userId) {
+    await Promise.all(
+      seriesData.map(async (serieData) => {
+        const creatorInfo = await Creators.findOne({
+          where: {
+            _id: serieData.creatorId
+          },
+          attributes: ["fullName", "description", "sns", "avatar"]
+        });
+
+        const serieFinalData = {
+          ...serieData.dataValues,
+          creatorInfo,
+        };
+        results.push(serieFinalData);
+      })
+    );
+
     return {
-      data: getPagination({ array: seriesData, page, limit }),
-      totalSeries: seriesData.length,
+      data: getPagination({ array: results, page, limit }),
+      totalSeries: results.length,
     };
+  }
 
   await Promise.all(
     seriesData.map(async (serieData) => {
