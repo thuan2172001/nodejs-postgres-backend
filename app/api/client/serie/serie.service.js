@@ -191,14 +191,23 @@ export const getById = async ({
 
   let episodes = [];
 
-  if (!userId)
+  if (!userId) {
+    const creatorInfo = await Creators.findOne({
+      where: {
+        _id: serie.creatorId
+      },
+      attributes: ["fullName", "description", "sns", "avatar"]
+    });
+  
     return {
       ...serie.dataValues,
+      creatorInfo,
       category: category,
       totalEpisodes: episodesData.length,
       episodes: getPagination({ array: episodesData, page, limit }),
       likes: likes.length ? likes.length + 1000 : 1000,
     };
+  }
 
   await Promise.all(
     episodesData.map(async (episodeData) => {
@@ -231,7 +240,6 @@ export const getById = async ({
     },
     attributes: ["fullName", "description", "sns", "avatar"]
   });
-
 
   const result = {
     ...serie.dataValues,
