@@ -46,6 +46,8 @@ export const getAllByUser = async ({
   if (!userId) {
     await Promise.all(
       seriesData.map(async (serieData) => {
+        let comments = await Comment.findAll({ where: { serieId: serieData.serieId } })
+        let likes = await Comment.findAll({ where: { serieId: serieData.serieId } })
         const creatorInfo = await Creators.findOne({
           where: {
             _id: serieData.creatorId
@@ -56,6 +58,8 @@ export const getAllByUser = async ({
         const serieFinalData = {
           ...serieData.dataValues,
           creatorInfo,
+          comments: comments.length,
+          likes: likes.length ? likes.length + 1000 : 1000,
         };
         results.push(serieFinalData);
       })
@@ -74,6 +78,9 @@ export const getAllByUser = async ({
           where: { serieId: serieData.serieId, userId },
         })) || null;
 
+      let comments = await Comment.findAll({ where: { serieId: serieData.serieId } })
+      let likes = await Comment.findAll({ where: { serieId: serieData.serieId } })
+
       const creatorInfo = await Creators.findOne({
         where: {
           _id: serieData.creatorId
@@ -85,6 +92,8 @@ export const getAllByUser = async ({
         ...serieData.dataValues,
         alreadyLiked: liked !== null,
         creatorInfo,
+        comments: comments.length,
+        likes: likes.length ? likes.length + 1000 : 1000,
       };
       results.push(serieFinalData);
     })
@@ -191,6 +200,8 @@ export const getById = async ({
 
   let episodes = [];
 
+  const comments = await Comment.findAll({ where: { serieId } })
+
   if (!userId) {
     const creatorInfo = await Creators.findOne({
       where: {
@@ -198,10 +209,11 @@ export const getById = async ({
       },
       attributes: ["fullName", "description", "sns", "avatar"]
     });
-  
+
     return {
       ...serie.dataValues,
       creatorInfo,
+      comments: comments.length,
       category: category,
       totalEpisodes: episodesData.length,
       episodes: getPagination({ array: episodesData, page, limit }),
@@ -216,7 +228,7 @@ export const getById = async ({
           where: { episodeId: episodeData.episodeId, userId },
         })) || null;
 
-      const comments = await Comment.findAll({
+      const epComments = await Comment.findAll({
         where: {
           episodeId: episodeData.episodeId
         }
@@ -224,7 +236,7 @@ export const getById = async ({
       const episodeFinalData = {
         ...episodeData.dataValues,
         alreadyLiked: liked !== null,
-        commentsQuantity: comments.length
+        comments: epComments.length,
       };
       episodes.push(episodeFinalData);
     })
@@ -244,6 +256,7 @@ export const getById = async ({
   const result = {
     ...serie.dataValues,
     creatorInfo,
+    comments: comments.length,
     category: category,
     totalEpisodes: episodes.length,
     episodes: getPagination({ array: episodes, page, limit }),
