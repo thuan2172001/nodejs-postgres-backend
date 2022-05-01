@@ -55,9 +55,18 @@ export const getAllByUser = async ({
         (await Likes.findOne({
           where: { serieId: serieData.serieId, userId },
         })) || null;
+
+      const creatorInfo = await Creators.findOne({
+        where: {
+          _id: serieData.creatorId
+        },
+        attributes: ["fullName", "description", "sns", "avatar"]
+      });
+
       const serieFinalData = {
         ...serieData.dataValues,
         alreadyLiked: liked !== null,
+        creatorInfo,
       };
       results.push(serieFinalData);
     })
@@ -179,9 +188,16 @@ export const getById = async ({
         (await Likes.findOne({
           where: { episodeId: episodeData.episodeId, userId },
         })) || null;
+
+      const comments = await Comment.findAll({
+        where: {
+          episodeId: episodeData.episodeId
+        }
+      })
       const episodeFinalData = {
         ...episodeData.dataValues,
         alreadyLiked: liked !== null,
+        commentsQuantity: comments.length
       };
       episodes.push(episodeFinalData);
     })

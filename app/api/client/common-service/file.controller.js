@@ -35,6 +35,21 @@ api.post('/upload', upload.any(), CheckAuth, async (req, res) => {
   });
 });
 
+api.post('/uploadv2', upload.any(), async (req, res) => {
+  upload.single('file')(req, res, (err) => {
+    if (err) return res.json(badRequest(err.message));
+
+    if (!req.files) return res.json(badRequest('FILE.UPLOAD.FILE_IS_REQUIRED'));
+
+    if (!req.files || req.files.length <= 0) {
+      return res.json(badRequest('FILE.UPLOAD'))
+    }
+    console.log(req.files[0])
+    const { key, location, pageNumber } = req.files[0];
+    return res.json(success({ key, location, pageNumber }));
+  });
+});
+
 api.get('/sign', async (req, res) => {
   try {
     const { key } = req.query;
