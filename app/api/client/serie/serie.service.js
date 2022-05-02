@@ -211,13 +211,30 @@ export const getById = async ({
       attributes: ["fullName", "description", "sns", "avatar"]
     });
 
+
+    await Promise.all(
+      episodesData.map(async (episodeData) => {
+        const epComments = await Comments.findAll({
+          where: {
+            episodeId: episodeData.episodeId
+          }
+        })
+        const episodeFinalData = {
+          ...episodeData.dataValues,
+          comments: epComments.length,
+        };
+        episodes.push(episodeFinalData);
+      })
+    );
+
+
     return {
       ...serie.dataValues,
       creatorInfo,
       comments: comments.length,
       category: category,
-      totalEpisodes: episodesData.length,
-      episodes: getPagination({ array: episodesData, page, limit }),
+      totalEpisodes: episodes.length,
+      episodes: getPagination({ array: episodes, page, limit }),
       likes: likes.length ? likes.length + 1000 : 1000,
     };
   }
