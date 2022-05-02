@@ -2,10 +2,21 @@ import express from "express";
 import { CheckAuth, skipGuestQuery } from "../../middlewares/auth.mid";
 import CommonError from "../../library/error";
 import { success } from "../../../utils/response-utils";
-import { editInfo, getSalesData } from "./creator.service";
+import { editInfo, getSalesData, getAll } from "./creator.service";
 import { Creators } from "../../../models/creator";
 
 const api = express.Router();
+
+api.get("/creator", skipGuestQuery(CheckAuth), async (req, res) => {
+  try {
+    const { page, limit, pattern } = req.query;
+    const results = await getAll({ page, limit, pattern })
+
+    return res.json(success(results));
+  } catch (err) {
+    return CommonError(req, err, res);
+  }
+});
 
 api.put("/creator/profile", CheckAuth, async (req, res) => {
   try {

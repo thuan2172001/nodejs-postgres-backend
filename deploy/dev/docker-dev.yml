@@ -47,6 +47,10 @@ services:
       - |
         ./wait-for-it.sh postgres:${PG_PORT}
         yarn start:nodemon
+    volumes:
+      - ../..:/app
+      - /app/.env
+      - /app/node_modules
     environment:
       - PROJECT_NAME
       - SERVER_SECRET
