@@ -115,6 +115,11 @@ export const deletePayment = async ({ userId, paymentMethodId }) => {
   }
 
   const status = await detachPaymentMethod({ paymentMethodId });
+  await PaymentMethods.destroy({
+    where: {
+      paymentId: paymentMethodId,
+    }
+  })
 
   return status;
 };

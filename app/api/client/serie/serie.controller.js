@@ -35,7 +35,6 @@ api.get("/serie/:serieId/episodes", CheckAuth, async (req, res) => {
     const { serieId } = req.params;
     const { isPublished, page, limit } = req.query;
     const creatorId = req.userInfo && req.userInfo._id ? req.userInfo._id : "";
-    console.log({ isPublished });
     const results = await getByIdAndStatus({
       creatorId,
       serieId,
