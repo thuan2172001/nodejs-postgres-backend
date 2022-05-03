@@ -133,7 +133,7 @@ export const getAllByCreator = async ({
       ? isPublished == "false"
         ? unpublishedSeries
         : publishedSeries
-      : { ...unpublishedSeries, ...publishedSeries };
+      : [...unpublishedSeries, ...publishedSeries];
 
   let results = [];
 
