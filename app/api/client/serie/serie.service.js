@@ -120,11 +120,11 @@ export const getAllByCreator = async ({
   if (!creator) throw new Error("SERIE.GET_ALL.CREATOR_NOT_FOUND");
 
   const publishedSeries = await Series.findAll({
-    where: { isPublished: true },
+    where: { isPublished: true, creatorId: creator._id },
     order: [["createdAt", "DESC"]],
   });
   const unpublishedSeries = await Series.findAll({
-    where: { isPublished: false },
+    where: { isPublished: false, creatorId: creator._id },
     order: [["createdAt", "DESC"]],
   });
 
