@@ -1,9 +1,43 @@
 import { Promise } from "bluebird";
 import { Creators } from "../../../models/creator";
+import { Episodes } from "../../../models/episode";
 import { Series } from "../../../models/serie";
 import { Transactions } from "../../../models/transaction";
 import { QueryTypes } from "sequelize";
 import { Sql } from "../../../database";
+
+export const getCreatorInfo = async ({
+  creatorId,
+}) => {
+  let creator = await Creators.findOne({
+    where: {
+      _id: creatorId,
+    },
+    attributes: ["_id", "fullName", "avatar", "description", "sns", "mediaLinks", "createdAt"]
+  })
+
+  if (!creator) throw new Error("CREATOR.CREATOR_NOT_FOUND");
+
+  let series = await Series.findAll({
+    where: {
+      creatorId
+    },
+    attributes: ["serieId"]
+  })
+
+  let seriesIds = series.map((serie) => serie.dataValues.serieId)
+
+  let episodes = await Episodes.findAll({
+    where: {
+      serieId: seriesIds
+    },
+    attributes: ["episodeId"]
+  })
+
+  return {
+    creator, seriesQuantity: series.length, episodeQuantity: episodes.length, 
+  }
+}
 
 export const getAll = async ({
   page = 1,

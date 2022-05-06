@@ -20,27 +20,29 @@ export const getAllByUser = async ({
   limit = 100,
   categoryId = null,
   pattern = null,
+  creatorId = null,
 }) => {
-  const seriesData = !categoryId
-    ? await Series.findAll({
-      where: {
-        isPublished: true,
-        serieName: {
-          [Op.iLike]: `%${pattern?.toString().toLowerCase() ?? ""}%`,
-        },
-      },
-      order: [["createdAt", "DESC"]],
-    })
-    : await Series.findAll({
-      where: {
-        categoryId,
-        isPublished: true,
-        serieName: {
-          [Op.iLike]: `%${pattern?.toString().toLowerCase() ?? ""}%`,
-        },
-      },
-      order: [["createdAt", "DESC"]],
-    });
+  let queryObj = {
+    isPublished: true,
+    serieName: {
+      [Op.iLike]: `%${pattern?.toString().toLowerCase() ?? ""}%`,
+    }
+  }
+
+  if (creatorId) {
+    queryObj.creatorId = creatorId;
+  }
+
+  if (categoryId) {
+    queryObj.categoryId = categoryId
+  }
+
+  console.log({queryObj})
+
+  const seriesData = await Series.findAll({
+    where: queryObj,
+    order: [["createdAt", "DESC"]],
+  });
 
   let results = [];
 

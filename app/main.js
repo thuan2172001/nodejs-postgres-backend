@@ -61,6 +61,7 @@ module.exports = () => {
 		app.use(cookieParser());
 		app.use(API_PREFIX, require('./api'));
 		app.use(express.static(`${__dirname}/../deploy/build`));
+		app.use('/uploads', express.static(`${__dirname}/../uploads`));
 		app.get('*', (req, res) => {
 			res.sendFile(path.join(__dirname, '../deploy/build', 'index.html'));
 		});
