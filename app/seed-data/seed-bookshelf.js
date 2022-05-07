@@ -22,7 +22,7 @@ export const generateBookshelf = async () => {
             const userId = field[header.indexOf('_id')];
 
             // const items = itemsData.slice(1, itemsData.length - 1).split(',');
-            const initialBookshelf = [];
+            const initialBookshelf = ["1facb760-1ea6-11ec-800e-ead0d846256c", "1facb760-1ea6-11ec-8d37-3f6d1eb6b393"];
 
             const item = {
                 // userId: field[header.indexOf('userId')],
