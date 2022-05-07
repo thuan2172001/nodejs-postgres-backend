@@ -346,13 +346,15 @@ export const createUser = async ({
     throw new Error("USER.CREATE_USER.MISSING_FIELD");
   }
 
-  const checkUsername = await Users.findOne({ where: { username } });
+  const checkUsernameCreator = await Creators.findOne({ where: { username } });
+  const checkUsernameUser = await Users.findOne({ where: { username } });
 
-  if (checkUsername) throw new Error("USER.CREATE_USER.EXISTED_USERNAME");
+  if (checkUsernameCreator || checkUsernameUser) throw new Error("USER.CREATE_ACCOUNT.EXISTED_USERNAME");
 
-  const checkEmail = await Users.findOne({ where: { email } });
+  const checkEmailCreator = await Creators.findOne({ where: { email } });
+  const checkEmailUser = await Users.findOne({ where: { email } });
 
-  if (checkEmail) throw new Error("USER.CREATE_USER.EXISTED_EMAIL");
+  if (checkEmailCreator || checkEmailUser) throw new Error("USER.CREATE_ACCOUNT.EXISTED_EMAIL");
 
   const item = {
     _id: uuidv1(),
