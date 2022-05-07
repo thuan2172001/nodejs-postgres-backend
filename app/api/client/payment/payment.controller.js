@@ -6,6 +6,7 @@ import {
   addPayment,
   checkoutOrder,
   getAllPaymentMethods,
+  getAllPaymentsLocal,
   deletePayment,
 } from "./payment.service";
 import { setupPaymentIntent } from "./stripe.service";
@@ -16,7 +17,7 @@ api.get("/payment", CheckAuth, async (req, res) => {
   try {
     const userId = req.userInfo && req.userInfo._id ? req.userInfo._id : "";
 
-    const response = await getAllPaymentMethods({
+    const response = await getAllPaymentsLocal({
       userId,
     });
 

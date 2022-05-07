@@ -356,6 +356,7 @@ export const createSerie = async ({
     categoryId,
     description,
     isPublished: false,
+    creatorId: creator._id
   });
   return result;
 };
