@@ -19,7 +19,7 @@ const { Creators } = require('../../../models/creator');
 const api = express.Router();
 var uploadLocal = multer({ dest: 'uploads/' })
 
-api.post('/uploadv3', uploadLocal.single('file'), async (req, res) => {
+api.post('/uploadv3', uploadLocal.single('file'), CheckAuth, async (req, res) => {
   try {
     const src = fs.createReadStream(req.file.path);
     const key = `${uuid.v4()}-${req.file.originalname.toString().replace(" ", "")}`;

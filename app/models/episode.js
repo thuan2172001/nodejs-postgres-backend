@@ -40,6 +40,7 @@ const Episodes = Sql.define('episodes', {
         type: DataTypes.BOOLEAN,
     },
     soldQuantity: {
+        defaultValue: 0,
         type: DataTypes.INTEGER,
     }
 }, {
