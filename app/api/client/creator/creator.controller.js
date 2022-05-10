@@ -2,7 +2,7 @@ import express from "express";
 import { CheckAuth, skipGuestQuery } from "../../middlewares/auth.mid";
 import CommonError from "../../library/error";
 import { success } from "../../../utils/response-utils";
-import { editInfo, getSalesData, getAll, getCreatorInfo } from "./creator.service";
+import { editInfo, getSalesData, getAll, getCreatorInfo, createCreator } from "./creator.service";
 import { Creators } from "../../../models/creator";
 
 const api = express.Router();
@@ -72,4 +72,36 @@ api.get("/creator/profile", async (req, res) => {
     return CommonError(req, err, res);
   }
 });
+
+
+api.post("/creator", async (req, res) => {
+  try {
+    const {
+      username,
+      email,
+      fullName,
+      publicKey,
+      encryptedPrivateKey,
+      phoneNumber,
+      avatar,
+      description
+    } = req.body;
+
+    const result = await createCreator({
+      username,
+      email,
+      fullName,
+      publicKey,
+      encryptedPrivateKey,
+      phoneNumber,
+      avatar,
+      description
+    });
+
+    return res.json(success(result));
+  } catch (err) {
+    return CommonError(req, err, res);
+  }
+});
+
 module.exports = api;

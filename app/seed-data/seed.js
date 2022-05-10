@@ -11,6 +11,7 @@ import { generateBookshelf } from "./seed-bookshelf";
 import { generateCode } from './seed-code';
 import { generateTransaction } from './seed-transaction';
 import { generatePayment } from './seed-payments';
+import { generateConversation } from './seed-conversation';
 
 export const seed = async () => {
     if (SEED_DATA === 'true') {
@@ -31,4 +32,5 @@ const _seed = async () => {
     await generateComments();
     await generateBookshelf();
     await generateTransaction();
+    await generateConversation();
 };

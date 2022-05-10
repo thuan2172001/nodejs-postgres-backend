@@ -51,6 +51,7 @@ services:
       - ../..:/app
       - /app/.env
       - /app/node_modules
+      - /app/uploads
     environment:
       - PROJECT_NAME
       - SERVER_SECRET

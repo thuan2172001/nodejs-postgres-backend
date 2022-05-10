@@ -72,6 +72,8 @@ export const addPayment = async ({
     throw new Error("PAYMENT.CARD_NOT_EXISTED_IN_STRIPE");
   }
 
+  console.log(allCard);
+
   await PaymentMethods.create({
     paymentId: card[0]["id"],
     nameOnCard,
@@ -96,9 +98,39 @@ export const getAllPaymentMethods = async ({ userId }) => {
     throw new Error("PAYMENT.STRIPE_ACCOUNT_NOT_FOUND");
   }
 
+  // const payments = await PaymentMethods.findAll({
+  //   where: {
+  //     userId: user._id
+  //   }
+  // })
+
+  // return payments;
+
   return getCustomerPaymentMethod({
     customerID: stripeAccount,
   });
+};
+
+export const getAllPaymentsLocal = async ({ userId }) => {
+  const user = await Users.findOne({ where: { _id: userId } });
+
+  if (!user) {
+    throw new Error("PAYMENT.USER.NOT_FOUND");
+  }
+
+  const { stripeAccount } = user;
+
+  if (!stripeAccount) {
+    throw new Error("PAYMENT.STRIPE_ACCOUNT_NOT_FOUND");
+  }
+
+  const payments = await PaymentMethods.findAll({
+    where: {
+      userId: user._id
+    }
+  })
+
+  return payments;
 };
 
 export const deletePayment = async ({ userId, paymentMethodId }) => {
