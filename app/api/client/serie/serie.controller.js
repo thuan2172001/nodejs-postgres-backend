@@ -10,6 +10,7 @@ import {
   getAllByUser,
   getAllByCreator,
   getByIdAndStatus,
+  deleteSerie,
 } from "./serie.service";
 
 const api = express.Router();
@@ -114,5 +115,16 @@ api.put("/serie/:serieId", CheckAuth, async (req, res) => {
     return CommonError(req, err, res);
   }
 });
+
+api.delete("/serie/:serieId", CheckAuth, async (req, res) => {
+  try {
+    const userId = req.userInfo && req.userInfo._id ? req.userInfo._id : "";
+    const { serieId } = req.params;
+    const result = await deleteSerie({ userId, serieId })
+    return res.json(success(result));
+  } catch (err) {
+    return CommonError(req, err, res);
+  }
+})
 
 module.exports = api;

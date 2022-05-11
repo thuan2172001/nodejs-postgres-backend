@@ -408,3 +408,28 @@ export const editSerieStatus = async ({ serieId, userId, type }) => {
 
   return result;
 };
+
+
+export const deleteSerie = async ({ userId, serieId }) => {
+  const creator = await Creators.findOne({ where: { _id: userId } });
+
+  if (!creator) throw new Error("SERIE.EDIT_SERIE.CREATOR_NOT_FOUND");
+
+  const serie = await Series.findOne({ where: { serieId } });
+
+  if (!serie) throw new Error("SERIE.EDIT_SERIE.SERIE_NOT_FOUND");
+
+  if (creator._id !== serie.creatorId) {
+    throw new Error("SERIE.DELETE.NOT_HAVE_PERMISSION")
+  }
+
+  const episode = await Episodes.findOne({where: {serieId}});
+  if (episode) {
+    throw new Error("SERIE.DELETE.NOT_EMPTY_SERIE")
+  }
+
+  await serie.destroy();
+
+  return true;
+};
+
