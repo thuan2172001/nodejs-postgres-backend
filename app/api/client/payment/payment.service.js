@@ -208,9 +208,9 @@ export const checkoutOrder = async ({
   });
 
   await Promise.all([
-    episodeInfos.map((e) => {
+    episodeInfos.map(async (e) => {
       episodeInfos.soldQuantity++;
-      episodeInfos.save();
+      e.save();
     })
   ])
 
