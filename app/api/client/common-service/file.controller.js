@@ -19,7 +19,7 @@ const { Creators } = require('../../../models/creator');
 const api = express.Router();
 var uploadLocal = multer({ dest: 'uploads/' })
 
-api.post('/uploadv3', uploadLocal.single('file'), CheckAuth, async (req, res) => {
+api.post('/uploadv3', uploadLocal.single('file'), async (req, res) => {
   try {
     const src = fs.createReadStream(req.file.path);
     const key = `${uuid.v4()}-${req.file.originalname.toString().replace(" ", "")}`;
@@ -27,6 +27,7 @@ api.post('/uploadv3', uploadLocal.single('file'), CheckAuth, async (req, res) =>
     src.pipe(dest);
     src.on('end', function () {
       fs.unlinkSync(req.file.path);
+      console.log({dest})
       return res.json(success({ key }));
     });
     src.on('error', function (err) {
