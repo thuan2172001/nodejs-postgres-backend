@@ -16,3 +16,8 @@ yarn-error.log*
 ./postgres-data
 ./about
 deploy/dev/postgres-data
+./wardrobe
+./resources
+./presets
+./extensions
+./index.html
