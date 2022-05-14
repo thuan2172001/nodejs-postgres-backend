@@ -1,5 +1,6 @@
 
 import { Conversations } from "../../../models/conversation";
+import { Users } from "../../../models/user";
 import { Op } from "sequelize";
 
 export const getListConversation = async ({
@@ -70,9 +71,10 @@ export const createMessage = async ({
     }
 
     if (!conversation) {
+        const userInfo = await Users.findOne({ where: { _id: userId } });
         const conversation = await Conversations.create({
-            sender: userId,
-            receiver,
+            sender: userInfo ? userId : receiver,
+            receiver: userInfo ? receiver : userId,
             messages: [messageInfo]
         })
 
