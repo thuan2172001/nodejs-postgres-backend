@@ -63,15 +63,16 @@ export const createMessage = async ({
         },
     })
 
+    const userInfo = await Users.findOne({ where: { _id: userId } });
+
     const messageInfo = {
-        sendBy: conversation ? conversation.sender === userId ? "sender" : "receiver" : "sender",
+        sendBy: userInfo ? "sender" : "receiver",
         body: message,
         time: new Date().getTime(),
         seen: false,
     }
 
     if (!conversation) {
-        const userInfo = await Users.findOne({ where: { _id: userId } });
         const conversation = await Conversations.create({
             sender: userInfo ? userId : receiver,
             receiver: userInfo ? receiver : userId,
