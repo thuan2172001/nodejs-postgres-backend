@@ -1,6 +1,7 @@
 
 import { Conversations } from "../../../models/conversation";
 import { Users } from "../../../models/user";
+import { Creators } from "../../../models/creator";
 import { Op } from "sequelize";
 
 export const getListConversation = async ({
@@ -15,6 +16,29 @@ export const getListConversation = async ({
         offset: (page - 1) * limit,
         limit: limit,
         order: [["updatedAt", "desc"]],
+    })
+
+    let data = conversations.rows.map(async (conversation) => {
+        let value = conversation.dataValues ?? conversation;
+        let friendId = conversation.sender === userId ? conversation.receiver : conversation.sender;
+        let [userFriend, creatorFriend] = await Promise.all([
+            Users.findOne({
+                where: {
+                    _id: friendId
+                },
+                attributes: ["_id", "fullName"]
+            }),
+            Creators.findOne({
+                where: {
+                    _id: friendId
+                },
+                attributes: ["_id", "fullName", "avatar"]
+            })
+        ]);
+        return {
+            ...value,
+            friendInfo: userFriend ?? creatorFriend
+        }
     })
 
     return {
