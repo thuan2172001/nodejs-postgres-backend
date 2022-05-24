@@ -180,6 +180,10 @@ export const checkoutOrder = async ({
     }
   })
 
+  const prices = episodeInfos.reduce((prev, episodeInfo) => {
+    return prev + episodeInfo.price;
+  }, [0])
+
   const newBookshelfItems = [...new Set([...bookshelfItems, ...cartList])];
 
   let result;
@@ -217,12 +221,18 @@ export const checkoutOrder = async ({
     { where: { userId: user._id } }
   );
 
+  let paymentInfo = await PaymentMethods.findOne({
+    where: {
+      paymentId: payment
+    }
+  })
+
   const transation = await Transactions.create({
     transactionId: uuidv1(),
     userId: user._id,
     paymentId: payment,
-    card: payment.card,
-    value: value,
+    card: paymentInfo?.card,
+    value: prices,
     items: cartList
   })
 
