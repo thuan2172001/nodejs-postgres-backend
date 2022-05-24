@@ -15,6 +15,10 @@ const Transactions = Sql.define('transactions', {
     paymentId: {
         type: DataTypes.STRING,
     },
+    // card: {
+    //     type: DataTypes.STRING,
+    //     allowNull: true,
+    // },
     value: {
         type: DataTypes.FLOAT,
     },
