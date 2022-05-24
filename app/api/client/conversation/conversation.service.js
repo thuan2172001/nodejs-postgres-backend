@@ -18,31 +18,43 @@ export const getListConversation = async ({
         order: [["updatedAt", "desc"]],
     })
 
-    let data = conversations.rows.map(async (conversation) => {
-        let value = conversation.dataValues ?? conversation;
-        let friendId = conversation.sender === userId ? conversation.receiver : conversation.sender;
-        let [userFriend, creatorFriend] = await Promise.all([
-            Users.findOne({
-                where: {
-                    _id: friendId
-                },
-                attributes: ["_id", "fullName"]
-            }),
-            Creators.findOne({
-                where: {
-                    _id: friendId
-                },
-                attributes: ["_id", "fullName", "avatar"]
-            })
-        ]);
-        return {
-            ...value,
-            friendInfo: userFriend ?? creatorFriend
-        }
-    })
+    let results = [];
+
+    await Promise.all(
+        conversations.rows.map(async (conversation) => {
+            let value = conversation;
+            
+            let message = conversation.messages;
+            let lastMessage = message.slice(message.length - 1)[0].body
+
+            let friendId = conversation.sender === userId ? conversation.receiver : conversation.sender;
+            let [userFriend, creatorFriend] = await Promise.all([
+                Users.findOne({
+                    where: {
+                        _id: friendId
+                    },
+                    attributes: ["_id", "fullName"]
+                }),
+                Creators.findOne({
+                    where: {
+                        _id: friendId
+                    },
+                    attributes: ["_id", "fullName", "avatar"]
+                })
+            ]);
+
+            let newData = {
+                ...value.dataValues,
+                friendInfo: userFriend ?? creatorFriend,
+                lastMessage,
+                messages: []
+            }
+
+            results.push(newData);
+        }));
 
     return {
-        data: conversations.rows,
+        data: results,
         total: conversations.count
     }
 };
@@ -125,4 +137,29 @@ export const deleteConversation = async ({
     })
     let res = await conversation.destroy();
     return res;
+};  
+
+export const getConversationId = async ({
+    userId,
+    receiver,
+}) => {
+    let conversation = await Conversations.findOne({
+        where: {
+            [Op.or]: [{ sender: userId, receiver: receiver }, { receiver: userId, sender: receiver }]
+        },
+    })
+    const userInfo = await Users.findOne({ where: { _id: userId } });
+    const userReceiverInfo = await Users.findOne({ where: { _id: receiver } });
+    const creatorInfo = await Creators.findOne({ where: { _id: receiver } });
+    if (!userReceiverInfo && !creatorInfo) {
+        throw new Error("invalid_receiver");
+    }
+    if (!conversation) {
+        conversation = await Conversations.create({
+            sender: userInfo ? userId : receiver,
+            receiver: userInfo ? receiver : userId,
+            messages: []
+        })
+    }
+    return conversation;
 };  

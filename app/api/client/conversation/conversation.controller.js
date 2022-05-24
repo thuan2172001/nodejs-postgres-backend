@@ -4,7 +4,7 @@ import CommonError from '../../library/error';
 import {
     success,
 } from '../../../utils/response-utils';
-import { getListConversation, createMessage, deleteConversation, getConversation } from './conversation.service';
+import { getListConversation, createMessage, deleteConversation, getConversation, getConversationId } from './conversation.service';
 
 const api = express.Router();
 
@@ -14,6 +14,21 @@ api.get('/conversation', CheckAuth, async (req, res) => {
             const { page, limit } = req.query;
             const userId = req.userInfo && req.userInfo._id ? req.userInfo._id : "";
             const results = await getListConversation({ userId, page, limit })
+            return res.json(success(results));
+        } catch (err) {
+            return CommonError(req, err, res);
+        }
+    } catch (err) {
+        return CommonError(req, err, res);
+    }
+});
+
+api.get('/conversation-id', CheckAuth, async (req, res) => {
+    try {
+        try {
+            const { receiver } = req.query;
+            const userId = req.userInfo && req.userInfo._id ? req.userInfo._id : "";
+            const results = await getConversationId({ userId, receiver })
             return res.json(success(results));
         } catch (err) {
             return CommonError(req, err, res);
