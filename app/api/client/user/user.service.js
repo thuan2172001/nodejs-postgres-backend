@@ -432,14 +432,12 @@ export const getAllTransaction = async ({
   }) : await Transactions.findAll();
 
   const data = await Promise.all(
-    transactions.map(async ({ transactionId, paymentId, value, items }) => {
+    transactions.map(async ({ transactionId, paymentId, value, items, card, createdAt }) => {
       const payment = await PaymentMethods.findOne({
         where: { paymentId },
       });
 
-      // if(!payment) return null;
-
-      const boughtUser = payment && await Users.findOne({where: { _id: payment.userId }}) 
+      const boughtUser = await Users.findOne({where: { _id: userId }}) 
 
       return {
         transactionId,
@@ -447,6 +445,8 @@ export const getAllTransaction = async ({
         user: boughtUser && {username: boughtUser.username, fullName: boughtUser.fullName},
         value,
         items,
+        card,
+        createdAt
       };
     })
   );

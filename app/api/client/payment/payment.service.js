@@ -221,6 +221,7 @@ export const checkoutOrder = async ({
     transactionId: uuidv1(),
     userId: user._id,
     paymentId: payment,
+    card: payment.card,
     value: value,
     items: cartList
   })
