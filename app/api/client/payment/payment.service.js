@@ -197,8 +197,6 @@ export const checkoutOrder = async ({
     );
   }
 
-  if (result.length < 0 || result[0] === 0) return null;
-
   const cart = await Carts.findOne({ where: { userId: user._id } });
 
   const cartItems = cart ? cart.dataValues?.cartItems : [];
@@ -219,12 +217,14 @@ export const checkoutOrder = async ({
     { where: { userId: user._id } }
   );
 
-  await Transactions.create({
+  const transation = await Transactions.create({
     transactionId: uuidv1(),
     userId: user._id,
     paymentId: payment,
     value: value,
     items: cartList
   })
+
+  console.log({ transation })
   return result;
 };
