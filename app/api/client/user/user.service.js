@@ -439,12 +439,12 @@ export const getAllTransaction = async ({
 
       // if(!payment) return null;
 
-      const boughtUser = await Users.findOne({where: { _id: payment.userId }})
+      const boughtUser = payment && await Users.findOne({where: { _id: payment.userId }}) 
 
       return {
         transactionId,
         payment: payment?.card ?? "",
-        user: {username: boughtUser.username, fullName: boughtUser.fullName},
+        user: boughtUser && {username: boughtUser.username, fullName: boughtUser.fullName},
         value,
         items,
       };
