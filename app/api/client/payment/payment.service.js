@@ -180,7 +180,13 @@ export const checkoutOrder = async ({
     }
   })
 
-  const prices = episodeInfos.reduce((prev, episodeInfo) => {
+  const cardlistEpisodeInfos = await Episodes.findAll({
+    where: {
+      episodeId: cartList
+    }
+  })
+
+  const prices = cardlistEpisodeInfos.reduce((prev, episodeInfo) => {
     return prev + episodeInfo.price;
   }, [0])
 
@@ -231,7 +237,7 @@ export const checkoutOrder = async ({
     transactionId: uuidv1(),
     userId: user._id,
     paymentId: payment,
-    card: paymentInfo?.card,
+    card: "XXXX-XXXX-XXXX-" + paymentInfo?.card?.last4 ?? "XXXX",
     value: prices,
     items: cartList
   })
