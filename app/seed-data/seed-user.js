@@ -19,6 +19,16 @@ export const generateUser = async () => {
 
     await Promise.each(content, async (line) => {
       const field = cleanField(line.split(";"));
+      let isExisted = false
+      try {
+        isExisted = await Users.findOne({
+          where: {
+            _id: field[header.indexOf("_id")]
+          }
+        })
+      } catch (err) {
+        isExisted = false;
+      }
 
       index++;
 
@@ -35,6 +45,8 @@ export const generateUser = async () => {
         age: 18,
         phoneNumber: `098898888${index}1`,
       };
+
+      if (isExisted) return;
 
       const stripeAccount = await createStripeAccount({
         email: item.email,

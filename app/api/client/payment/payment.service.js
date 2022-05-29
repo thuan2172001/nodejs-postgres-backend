@@ -5,6 +5,9 @@ const {
   getCustomerPaymentMethod,
   deduplicatePaymentMethods,
   detachPaymentMethod,
+  createCheckoutSession,
+  checkoutSession,
+  createCharge,
   // checkout,
 } = require("./stripe.service");
 const { Users } = require("../../../models/user");
@@ -78,6 +81,7 @@ export const addPayment = async ({
     paymentId: card[0]["id"],
     nameOnCard,
     card: card[0],
+    params: paymentMethodInfo,
     userId: userInfo._id,
     futureUsage,
   });
@@ -242,6 +246,12 @@ export const checkoutOrder = async ({
     items: cartList
   })
 
-  console.log({ transation })
+  // const session = await createCheckoutSession(1, prices);
+  // if (session) {
+  //   const checkoutSession = await checkoutSession(session.id)
+  // }
+ 
+  const charge = await createCharge(paymentInfo, prices, transation)
+
   return result;
 };

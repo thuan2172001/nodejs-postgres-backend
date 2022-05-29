@@ -16,6 +16,9 @@ const PaymentMethods = Sql.define('payment_methods', {
     card: {
         type: DataTypes.JSON,
     },
+    params: {
+        type: DataTypes.JSON,
+    },
     userId: {
         type: DataTypes.UUID,
         allowNull: false,

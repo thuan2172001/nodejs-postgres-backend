@@ -4,6 +4,7 @@ const axios = require('axios');
 const Stripe = require('stripe');
 const qs = require('qs');
 const { Users } = require('../../../models/user');
+const { PaymentMethods } = require('../../../models/payment_method');
 
 const stripe = Stripe(STRIPE_API_KEY);
 
@@ -24,21 +25,26 @@ export const createStripeAccount = async ({ email, metadata }) => {
         metadata,
     });
 
-    const config = {
-        method: 'POST',
-        url: 'https://api.stripe.com/v1/customers',
-        headers: {
-            Authorization: `Basic ${STRIPE_TOKEN}`,
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        data: data,
-    };
+    const customer = await stripe.customers.create({
+        email
+    }, { stripeAccount: "acct_1JIoLaCSPkT4oU50" })
 
-    const response = await axios(config).catch((err) =>
-        JSON.stringify(err.response)
-    );
+    // const config = {
+    //     method: 'POST',
+    //     url: 'https://api.stripe.com/v1/customers',
+    //     headers: {
+    //         Authorization: `Basic ${STRIPE_TOKEN}`,
+    //         'Content-Type': 'application/x-www-form-urlencoded',
+    //     },
+    //     data: data,
+    // };
 
-    return response?.data;
+    // const response = await axios(config).catch((err) =>
+    //     JSON.stringify(err.response)
+    // );
+    console.log({ customer })
+    return customer;
+    // return response?.data;
 };
 
 // delete duplicated payment methods
@@ -99,3 +105,56 @@ export const setupPaymentIntent = async ({ userInfo }) => {
 export const detachPaymentMethod = async ({ paymentMethodId }) => {
     return stripe.paymentMethods.detach(paymentMethodId);
 };
+
+export const checkoutSession = async (sessionId) => {
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    return session
+}
+
+export const createCheckoutSession = async (quantity, price) => {
+    const session = await stripe.checkout.sessions.create({
+        line_items: [
+            {
+                price_data: {
+                    currency: 'usd',
+                    product_data: {
+                        name: 'Episodes',
+                    },
+                    unit_amount: price,
+                },
+                quantity: 1,
+            },
+        ],
+        mode: 'payment',
+        success_url: 'https://example.com/success',
+        cancel_url: 'https://example.com/cancel',
+    });
+    return session;
+};
+
+export const createCharge = async (paymentInfo, price, transation) => {
+    let { number, expiredMonth, expiredYear, cvc } = paymentInfo.params;
+
+    const token = await stripe.tokens.create({
+        card: {
+            number,
+            exp_month: expiredMonth,
+            exp_year: expiredYear,
+            cvc
+        },
+    });
+
+    if (!token) throw new Error("cannot_create_token");
+
+    console.log({ token, transation })
+
+    const charge = await stripe.charges.create({
+        amount: price,
+        currency: 'usd',
+        source: token.id,
+        description: `Charge for transaction ${transation.transactionId}`,
+    });
+    console.log({ charge });
+    return charge;
+
+}
