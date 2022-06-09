@@ -162,9 +162,9 @@ api.post("/auth/forgot-password", async (req, res) => {
 
 api.put("/auth/reset-password", async (req, res) => {
   try {
-    const { codeId, userId, publicKey, encryptedPrivateKey } = req.body;
+    const { codeId, email, publicKey, encryptedPrivateKey } = req.body;
 
-    const verifyStatus = await verifyCode({ codeId, userId });
+    const verifyStatus = await verifyCode({ codeId, email });
 
     if (!verifyStatus) throw new Error("AUTH.ERROR.RESET_PASSWORD.FAILED");
 
@@ -172,26 +172,26 @@ api.put("/auth/reset-password", async (req, res) => {
       throw new Error("AUTH.ERROR.BODY_MISSING_FIELD");
 
     const user = await Users.findOne({
-      where: { _id: userId },
+      where: { email: email },
     });
 
     if (user) {
       const statusCode = await Users.update(
         { publicKey, encryptedPrivateKey },
-        { where: { _id: userId } }
+        { where: { _id: user._id } }
       );
       const result = statusCode > 0 ? "success" : "failed";
       return res.json(success(result));
     }
 
     const creator = await Creators.findOne({
-      where: { _id: userId },
+      where: { email: email },
     });
 
     if (creator) {
       const statusCode = await Users.update(
         { publicKey, encryptedPrivateKey },
-        { where: { _id: userId } }
+        { where: { _id: creator._id } }
       );
       const result = statusCode > 0 ? "success" : "failed";
       return res.json(success(result));
