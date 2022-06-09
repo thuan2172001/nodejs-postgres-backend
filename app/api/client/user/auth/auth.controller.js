@@ -164,16 +164,20 @@ api.put("/auth/reset-password", async (req, res) => {
   try {
     const { codeId, email, publicKey, encryptedPrivateKey } = req.body;
 
-    const verifyStatus = await verifyCode({ codeId, email });
-
-    if (!verifyStatus) throw new Error("AUTH.ERROR.RESET_PASSWORD.FAILED");
-
     if (!publicKey || !encryptedPrivateKey)
       throw new Error("AUTH.ERROR.BODY_MISSING_FIELD");
 
     const user = await Users.findOne({
       where: { email: email },
     });
+
+    const creator = await Creators.findOne({
+      where: { email: email },
+    });
+
+    const verifyStatus = await verifyCode({ codeId, userId: user._id ?? creator._id ?? null });
+
+    if (!verifyStatus) throw new Error("AUTH.ERROR.RESET_PASSWORD.FAILED");
 
     if (user) {
       const statusCode = await Users.update(
@@ -184,9 +188,6 @@ api.put("/auth/reset-password", async (req, res) => {
       return res.json(success(result));
     }
 
-    const creator = await Creators.findOne({
-      where: { email: email },
-    });
 
     if (creator) {
       const statusCode = await Users.update(
