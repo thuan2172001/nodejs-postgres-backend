@@ -18,6 +18,17 @@ api.get("/creator", skipGuestQuery(CheckAuth), async (req, res) => {
   }
 });
 
+api.get("/creator/sales", CheckAuth, async (req, res) => {
+  try {
+    const creatorId = req.userInfo && req.userInfo._id ? req.userInfo._id : "";
+    const data = await getSalesData({ creatorId });
+
+    return res.json(success(data));
+  } catch (err) {
+    return CommonError(req, err, res);
+  }
+});
+
 api.get("/creator/:creatorId", skipGuestQuery(CheckAuth), async (req, res) => {
   try {
     const { creatorId } = req.params;
@@ -43,17 +54,6 @@ api.put("/creator/profile", CheckAuth, async (req, res) => {
     });
 
     return res.json(success(result));
-  } catch (err) {
-    return CommonError(req, err, res);
-  }
-});
-
-api.get("/creator/sales", CheckAuth, async (req, res) => {
-  try {
-    const creatorId = req.userInfo && req.userInfo._id ? req.userInfo._id : "";
-    const data = await getSalesData({ creatorId });
-
-    return res.json(success(data));
   } catch (err) {
     return CommonError(req, err, res);
   }

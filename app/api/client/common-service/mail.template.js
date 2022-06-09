@@ -52,13 +52,11 @@ export const resetPasswordTemplate = (href) => `<!DOCTYPE html
         <div class='content-container' style="padding-top: 41px; ">
             <div class='content-msg'>
                 <span style="padding-top: 41px; margin-top: 41px;">
-                    This link will expired in 5 minutes. Click this link to reset your password.
+                    This code will expired in 5 minutes.
                 </span>
             </div>
-            <div style="width: 90%; font-size: 30px; word-break: break-all; margin-left: 5%; text-align: start !important;">
-                <a href=${href}>
-                    ${href}
-                </a>
+            <div style="width: 90%; font-size: 30px; word-break: break-all; margin-left: 5%; text-align: center !important;">
+                ${href}
             </div>
         </div>
     </div>

@@ -4,7 +4,7 @@ import { Users } from "../../../models/user";
 import { Episodes } from "../../../models/episode";
 import { Series } from "../../../models/serie";
 import { Transactions } from "../../../models/transaction";
-import { QueryTypes } from "sequelize";
+import { Op, QueryTypes } from "sequelize";
 import { Sql } from "../../../database";
 import { createStripeAccount } from "../payment/stripe.service";
 
@@ -90,7 +90,7 @@ export const getCreatorInfo = async ({
   })
 
   return {
-    creator, seriesQuantity: series.length, episodeQuantity: episodes.length, 
+    creator, seriesQuantity: series.length, episodeQuantity: episodes.length,
   }
 }
 
@@ -139,8 +139,7 @@ export const getSalesData = async ({ creatorId }) => {
 
   await Promise.each(months, async (month) => {
     const monthTransactions = await Sql.query(
-      `SELECT * FROM transactions where extract(month from "bought_at") = ${month + 1
-      }`,
+      `SELECT * FROM transactions where extract(month from "bought_at") = ${month + 1}`,
       {
         type: QueryTypes.SELECT,
       }
@@ -148,8 +147,31 @@ export const getSalesData = async ({ creatorId }) => {
     const monthSale = monthTransactions.reduce((prv, cur) => {
       return prv + cur.value;
     }, 0);
-    monthSales.push(monthSale);
+    console.log("debug")
+    const seriesCount = await Sql.query(
+      `SELECT COUNT(*) FROM series where extract(month from "createdAt") = ${month + 1} and "creatorId" = '${creatorId}'`,
+      {
+        type: QueryTypes.SELECT,
+      }
+    );
+    const episodeCount = await Sql.query(
+      `select COUNT(*) from episodes where "serieId" in (select series."serieId" from series where "creatorId" = '${creatorId}') and extract(month from "createdAt") = ${month + 1}`,
+      {
+        type: QueryTypes.SELECT,
+      }
+    );
+
+    let monthNames = ["January", "February", "March", "April", "May", "June", "July",
+      "August", "September", "October", "November", "December"]
+
+    monthSales.push({
+      month: month + 1,
+      monthName: monthNames[month],
+      year: new Date().getFullYear(),
+      totalSale: monthSale, createdSeries: seriesCount[0].count, createdEpisodes: episodeCount[0].count
+    });
   });
+
 
   let total = 0;
 

@@ -31,6 +31,11 @@ export const { AWS_BUCKET_NAME } = process.env;
 export const { AWS_ACCESS_KEY_ID } = process.env;
 export const { AWS_SECRET_ACCESS_KEY } = process.env;
 
+export const { CLIENT_ID } = process.env;
+export const { CLIENT_SECRET } = process.env;
+export const { REFRESH_TOKEN } = process.env;
+export const { ACCESS_TOKEN } = process.env;
+
 export const IMAGE = ['.svg', '.png', '.jpg', '.jpeg'];
 export const READ = ['.pdf'];
 
