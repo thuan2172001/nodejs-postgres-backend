@@ -25,7 +25,7 @@ export const getListConversation = async ({
             let value = conversation;
             
             let message = conversation.messages;
-            let lastMessage = message.slice(message.length - 1)[0].body
+            let lastMessage = message.slice(message.length - 1)[0]?.body ?? ""
 
             let friendId = conversation.sender === userId ? conversation.receiver : conversation.sender;
             let [userFriend, creatorFriend] = await Promise.all([

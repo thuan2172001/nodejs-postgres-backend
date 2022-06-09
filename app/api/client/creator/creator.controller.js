@@ -18,37 +18,6 @@ api.get("/creator", skipGuestQuery(CheckAuth), async (req, res) => {
   }
 });
 
-
-api.put("/creator/profile", CheckAuth, async (req, res) => {
-  try {
-    const creatorId = req.userInfo && req.userInfo._id ? req.userInfo._id : "";
-    const { shopName, avatar, description, sns, mediaLinks } = req.body;
-    const result = await editInfo({
-      creatorId,
-      shopName,
-      avatar,
-      description,
-      sns,
-      mediaLinks,
-    });
-
-    return res.json(success(result));
-  } catch (err) {
-    return CommonError(req, err, res);
-  }
-});
-
-api.get("/creator/:creatorId", skipGuestQuery(CheckAuth), async (req, res) => {
-  try {
-    const { creatorId } = req.params;
-    const results = await getCreatorInfo({ creatorId })
-
-    return res.json(success(results));
-  } catch (err) {
-    return CommonError(req, err, res);
-  }
-});
-
 api.get("/creator/sales", CheckAuth, async (req, res) => {
   try {
     const creatorId = req.userInfo && req.userInfo._id ? req.userInfo._id : "";
@@ -69,6 +38,36 @@ api.get("/creator/profile", async (req, res) => {
     }
 
     throw new Error("AUTH.ERROR.USER_NOT_FOUND");
+  } catch (err) {
+    return CommonError(req, err, res);
+  }
+});
+
+api.get("/creator/:creatorId", skipGuestQuery(CheckAuth), async (req, res) => {
+  try {
+    const { creatorId } = req.params;
+    const results = await getCreatorInfo({ creatorId })
+
+    return res.json(success(results));
+  } catch (err) {
+    return CommonError(req, err, res);
+  }
+});
+
+api.put("/creator/profile", CheckAuth, async (req, res) => {
+  try {
+    const creatorId = req.userInfo && req.userInfo._id ? req.userInfo._id : "";
+    const { shopName, avatar, description, sns, mediaLinks } = req.body;
+    const result = await editInfo({
+      creatorId,
+      shopName,
+      avatar,
+      description,
+      sns,
+      mediaLinks,
+    });
+
+    return res.json(success(result));
   } catch (err) {
     return CommonError(req, err, res);
   }

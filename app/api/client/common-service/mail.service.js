@@ -2,13 +2,17 @@ const {
   FRONTEND_BASE_URL,
   MAIL_NAME,
   MAIL_PASS,
+  CLIENT_ID,
+  CLIENT_SECRET,
+  REFRESH_TOKEN,
+  ACCESS_TOKEN,
 } = require("../../../environment");
 
 const mailer = require("nodemailer");
-
+const { google } = require("googleapis");
 const { Users } = require("../../../models/user");
 const { Creators } = require("../../../models/creator");
-
+const OAuth2 = google.auth.OAuth2;
 import { resetPasswordTemplate } from "./mail.template";
 
 const _generateURL = ({ type, activeCode, userId }) => {
@@ -19,14 +23,14 @@ const _generateURL = ({ type, activeCode, userId }) => {
   return "";
 };
 
-const _configEmailTemplate = ({ to, href, type }) => {
+const _configEmailTemplate = ({ to, activeCode, type }) => {
   switch (type) {
     case "reset-password":
       return {
         from: "TECHNICAL DEBT <MAIL_NAME>",
         to,
         subject: "[WEBTOONZ] Reset Password",
-        html: resetPasswordTemplate(href),
+        html: resetPasswordTemplate(activeCode),
       };
 
     case "verify-email":
@@ -34,7 +38,7 @@ const _configEmailTemplate = ({ to, href, type }) => {
         from: "TECHNICAL DEBT <MAIL_NAME>",
         to,
         subject: "[WEBTOONZ] Verification Email",
-        html: resetPasswordTemplate(href),
+        html: resetPasswordTemplate(activeCode),
       };
 
     default:
@@ -43,15 +47,35 @@ const _configEmailTemplate = ({ to, href, type }) => {
 };
 
 export const sendEmail = async ({ activeCode, email, type }) => {
+
+  let client_id = CLIENT_ID
+  let client_secret = CLIENT_SECRET
+  let refresh_token = REFRESH_TOKEN
+  let access_token = ACCESS_TOKEN
+
+  const oauth2Client = new OAuth2(
+    client_id,
+    client_secret,
+    "https://developers.google.com/oauthplayground"
+  );
+
+  oauth2Client.setCredentials({
+    refresh_token: refresh_token
+  });
+
   const smtpTransport = mailer.createTransport({
     service: "gmail",
     auth: {
-      user: MAIL_NAME,
-      pass: MAIL_PASS,
-    },
+      type: "OAuth2",
+      user: "thuan2172001@gmail.com",
+      accessToken: access_token,
+      clientId: client_id,
+      clientSecret: client_secret,
+      refreshToken: refresh_token
+    }
   });
 
-  await smtpTransport.verify((err) => {
+  smtpTransport.verify((err) => {
     if (err) {
       // throw new Error("GMAIL.SERVICE_FAILED");
       console.log({ err });
@@ -71,12 +95,12 @@ export const sendEmail = async ({ activeCode, email, type }) => {
   });
 
   // if (!user && !creator) {
-    // throw new Error("GMAIL.ACCOUNT_NOT_FOUND");
+  // throw new Error("GMAIL.ACCOUNT_NOT_FOUND");
   // }
 
-  const href = _generateURL({ type, activeCode, userId: user._id });
+  // const href = _generateURL({ type, activeCode, userId: user._id });
 
-  const mailDataConfig = _configEmailTemplate({ to: user.email, href, type });
+  const mailDataConfig = _configEmailTemplate({ to: user.email, activeCode, type });
 
   return new Promise((resolve, reject) => {
     smtpTransport.sendMail(mailDataConfig, (error, response) => {
