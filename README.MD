@@ -8,7 +8,7 @@
   <p align="center">
     Shop to buy and sell exclusive digital works of an author!
     <br />
-    <a href="https://glucozo.herokuapp.com/">View Demo</a>
+    <a href="#">View Demo</a>
     ·
     <a href="https://github.com/thuan2172001/nodejs-postgres-backend/issues">Report Bug</a>
     ·
