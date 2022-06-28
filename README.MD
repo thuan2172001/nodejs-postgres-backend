@@ -17,7 +17,7 @@
 </p>
 
 ## About The Project
- An author's online store, selling exclusive digital works. Support reading and paying directly on the system.c phẩm.
+ Ecommerce system, selling exclusive digital works. Support reading and paying directly on the system.c phẩm.
 ### Built With
 
 Frameworks and technology using to build this project:
